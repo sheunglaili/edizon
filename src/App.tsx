@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Grid, Paper, makeStyles } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import ImageIcon from "@material-ui/icons/Image";
+import Dropzone from './component/Dropzone'
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -14,14 +14,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.contrastText,
     width: "500px",
     height: "500px",
-  },
-  dropzoneContainer: {
-    height: "100%",
-  },
-  dropzone: {
-    border: `1px dashed ${theme.palette.secondary.contrastText}`,
-    color: theme.palette.secondary.contrastText,
-    margin: "1rem",
   },
 }));
 
@@ -40,21 +32,7 @@ function App() {
         <Grid item>
           <Container maxWidth="sm">
             <Paper className={styles.paper}>
-              <Grid container className={styles.dropzoneContainer}>
-                <Grid
-                  item
-                  container
-                  xs={12}
-                  direction="column"
-                  justify="center"
-                  alignContent="center"
-                  alignItems="center"
-                  className={styles.dropzone}
-                >
-                  <ImageIcon />
-                  Drag in your image
-                </Grid>
-              </Grid>
+              <Dropzone />
             </Paper>
           </Container>
         </Grid>

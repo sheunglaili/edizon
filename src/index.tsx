@@ -7,12 +7,14 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import blueGrey from "@material-ui/core/colors/blueGrey";
 import grey from "@material-ui/core/colors/grey";
 import cyan from "@material-ui/core/colors/cyan";
+import BumbleBeeProvider from "./lib/bumblebee-provider";
+import bumblebee from "./initBumblebee";
 
 const theme = createMuiTheme({
   palette: {
     primary: {
       main: blueGrey[900],
-      contrastText: cyan['A100'],
+      contrastText: cyan["A100"],
     },
     secondary: {
       main: grey[900],
@@ -23,9 +25,11 @@ const theme = createMuiTheme({
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
+    <BumbleBeeProvider bumblebee={bumblebee}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </BumbleBeeProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
