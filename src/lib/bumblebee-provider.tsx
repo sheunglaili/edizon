@@ -1,7 +1,11 @@
 import React from "react";
 import Bumblebee from 'bumblebee-hotword';
 
-const ContextStore = React.createContext({
+interface BumblebeeContext {
+  bumblebee : null | Bumblebee
+}
+
+const ContextStore = React.createContext<BumblebeeContext>({
   bumblebee: null,
 });
 

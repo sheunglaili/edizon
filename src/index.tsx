@@ -13,7 +13,7 @@ import bumblebee from "./initBumblebee";
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: blueGrey[900],
+      main: '#121212',
       contrastText: cyan["A100"],
     },
     secondary: {

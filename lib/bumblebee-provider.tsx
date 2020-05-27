@@ -2,7 +2,7 @@ import React from "react";
 import Bumblebee from 'bumblebee-hotword';
 
 const ContextStore = React.createContext({
-  bumblebee: null,
+  bumblebee: Bumblebee,
 });
 
 interface Props {
