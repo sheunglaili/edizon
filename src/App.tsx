@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Container, Grid, Paper, makeStyles  } from "@material-ui/core";
+import { Container, Grid, Paper, makeStyles } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Dropzone from "./component/Dropzone";
 import Spectrum from "./component/Spectrum";
@@ -10,6 +10,7 @@ import Recorder from "./lib/recorder";
 const useStyles = makeStyles((theme) => ({
   container: {
     height: "100vh",
+    flexGrow: 1,
     background: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
@@ -19,8 +20,15 @@ const useStyles = makeStyles((theme) => ({
     width: "500px",
     height: "500px",
   },
-  recordingSection : {
-    margin : '3rem'
+  grid: {
+    display: 'flex',
+    flexDirection: "column",
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%'
+  },
+  item: {
+    flex: '1 0 auto'
   }
 }));
 
@@ -40,56 +48,63 @@ function App() {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true
       })
+      const ctx = new AudioContext()
+      const source = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      source.connect(analyser);
+
+      setAnalyserNode(analyser);
+
       const recorder = new Recorder(stream, (audio) => {
         setCalled(false)
+        bumblebee?.start()
         console.log(URL.createObjectURL(audio))
       })
+      bumblebee?.stop()
       recorder.start();
-    }, []);
+    }, [bumblebee]);
 
-  const onAnalyserReady = useCallback((analyser) => {
-    setAnalyserNode(analyser);
-  }, []);
 
   useEffect(() => {
     if (bumblebee) {
       console.debug("start bumblebee");
-      bumblebee.start();
       bumblebee.on("hotword", onHotWord);
-      bumblebee.on("analyser", onAnalyserReady);
+      bumblebee.start();
     }
     return () => {
       console.debug("stop bumblebee");
       bumblebee?.stop();
     };
-  }, [bumblebee, onHotWord, onAnalyserReady]);
+  }, [bumblebee, onHotWord,]);
 
   return (
     <>
       <CssBaseline />
       <Grid
-        className={styles.container}
-        alignItems="center"
-        justify="center"
-        direction="column"
-        spacing={5}
         container
-      >
-        <Grid item>
-          <Container maxWidth="sm">
-            <Paper className={styles.paper}>
-              <Dropzone onFilesAdded={() => { }} />
-            </Paper>
-          </Container>
+        direction="column"
+        justify="center"
+        alignItems="center"
+        className={styles.container}>
+        <Grid
+          container
+          justify="center"
+          alignContent="center"
+          item
+          xs={9}>
+          <Paper className={styles.paper}>
+            <Dropzone onFilesAdded={() => { }} />
+          </Paper>
         </Grid>
-        <Grid 
-        xs={3} 
-        item>
-            {called ?
-              <>
-                <Spectrum analyserNode={analyserNode} />
-              </>
-              : <MicIcon />}
+        <Grid container
+          justify="center"
+          alignContent="center"
+          item xs={3}>
+          {called ?
+            <>
+              <Spectrum analyserNode={analyserNode} />
+            </>
+            : <MicIcon />}
         </Grid>
       </Grid>
     </>
