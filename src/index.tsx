@@ -4,16 +4,16 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import blueGrey from "@material-ui/core/colors/blueGrey";
 import grey from "@material-ui/core/colors/grey";
 import cyan from "@material-ui/core/colors/cyan";
 import BumbleBeeProvider from "./lib/bumblebee-provider";
 import bumblebee from "./initBumblebee";
+import { RecoilRoot } from "recoil";
 
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#121212',
+      main: "#121212",
       contrastText: cyan["A100"],
     },
     secondary: {
@@ -27,7 +27,9 @@ ReactDOM.render(
   <React.StrictMode>
     <BumbleBeeProvider bumblebee={bumblebee}>
       <ThemeProvider theme={theme}>
-        <App />
+        <RecoilRoot>
+          <App />
+        </RecoilRoot>
       </ThemeProvider>
     </BumbleBeeProvider>
   </React.StrictMode>,

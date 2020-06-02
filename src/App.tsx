@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Container, Grid, Paper, makeStyles } from "@material-ui/core";
+import { Grid, Paper, makeStyles } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Dropzone from "./component/Dropzone";
 import Spectrum from "./component/Spectrum";
 import { useBumbleBee } from "./lib/bumblebee-provider";
-import MicIcon from '@material-ui/icons/Mic';
+import MicIcon from "@material-ui/icons/Mic";
 import Recorder from "./lib/recorder";
+import { useSetRecoilState } from "recoil";
+import { userSpeechState } from "./state/nlp";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -21,15 +23,15 @@ const useStyles = makeStyles((theme) => ({
     height: "500px",
   },
   grid: {
-    display: 'flex',
+    display: "flex",
     flexDirection: "column",
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%'
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
   },
   item: {
-    flex: '1 0 auto'
-  }
+    flex: "1 0 auto",
+  },
 }));
 
 function App() {
@@ -40,15 +42,15 @@ function App() {
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode>();
   const [called, setCalled] = useState(false);
 
-
+  const setSpeech = useSetRecoilState(userSpeechState);
 
   const onHotWord = useCallback(
     async (hotword) => {
       setCalled(true);
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true
-      })
-      const ctx = new AudioContext()
+        audio: true,
+      });
+      const ctx = new AudioContext();
       const source = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
       source.connect(analyser);
@@ -56,14 +58,18 @@ function App() {
       setAnalyserNode(analyser);
 
       const recorder = new Recorder(stream, (audio) => {
-        setCalled(false)
-        bumblebee?.start()
-        console.log(URL.createObjectURL(audio))
-      })
-      bumblebee?.stop()
+        // resume the mic icon
+        setCalled(false);
+        // set recorded audio to trigger wit.ai
+        setSpeech(audio);
+        bumblebee?.start();
+        console.log(URL.createObjectURL(audio));
+      });
+      bumblebee?.stop();
       recorder.start();
-    }, [bumblebee]);
-
+    },
+    [bumblebee]
+  );
 
   useEffect(() => {
     if (bumblebee) {
@@ -75,7 +81,7 @@ function App() {
       console.debug("stop bumblebee");
       bumblebee?.stop();
     };
-  }, [bumblebee, onHotWord,]);
+  }, [bumblebee, onHotWord]);
 
   return (
     <>
@@ -85,26 +91,15 @@ function App() {
         direction="column"
         justify="center"
         alignItems="center"
-        className={styles.container}>
-        <Grid
-          container
-          justify="center"
-          alignContent="center"
-          item
-          xs={9}>
+        className={styles.container}
+      >
+        <Grid container justify="center" alignContent="center" item xs={9}>
           <Paper className={styles.paper}>
-            <Dropzone onFilesAdded={() => { }} />
+            <Dropzone onFilesAdded={() => {}} />
           </Paper>
         </Grid>
-        <Grid container
-          justify="center"
-          alignContent="center"
-          item xs={3}>
-          {called ?
-            <>
-              <Spectrum analyserNode={analyserNode} />
-            </>
-            : <MicIcon />}
+        <Grid container justify="center" alignContent="center" item xs={3}>
+          {called ? <Spectrum analyserNode={analyserNode} /> : <MicIcon />}
         </Grid>
       </Grid>
     </>
