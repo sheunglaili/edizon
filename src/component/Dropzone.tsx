@@ -10,7 +10,6 @@ const useStyles = makeStyles((theme) => ({
   dropzone: {
     border: `3px dashed ${theme.palette.secondary.contrastText}`,
     color: theme.palette.secondary.contrastText,
-    margin: "1rem",
     "& input": {
       display: "none",
     },
@@ -46,18 +45,22 @@ export default function Dropzone({ onFilesAdded }: Props) {
   }, []);
   const onChange = useCallback(
     (evt) => {
-      const files = evt.target;
+      const { files } = evt.target;
       onFilesAdded(files);
     },
     [onFilesAdded]
   );
   const onDrop = useCallback(
     (evt) => {
-      const files = evt.dataTransfer;
+      evt.preventDefault();
+      const { files } = evt.dataTransfer;
       onFilesAdded(files);
     },
     [onFilesAdded]
   );
+  const onDragOver = useCallback((evt)=>{
+    evt.preventDefault();
+  }, [])
   const onClick = useCallback(() => {
     if (fileRef.current) {
       fileRef.current.click();
@@ -80,8 +83,9 @@ export default function Dropzone({ onFilesAdded }: Props) {
           <ButtonBase
             onDragEnter={onDragEnter}
             onDragLeave={onDragLeave}
-            onDrop={onDrop}
             onClick={onClick}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
             style={{ color: hover ? grey[100] : grey[400] }}
           >
             <ImageIcon />

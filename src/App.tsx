@@ -1,13 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Grid, Paper, makeStyles } from "@material-ui/core";
+import React from "react";
+import { Grid, makeStyles } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Dropzone from "./component/Dropzone";
-import Spectrum from "./component/Spectrum";
-import { useBumbleBee } from "./lib/bumblebee-provider";
-import MicIcon from "@material-ui/icons/Mic";
-import Recorder from "./lib/recorder";
-import { useSetRecoilState } from "recoil";
-import { userSpeechState } from "./state/nlp";
+import Album from "./component/Album";
+import Analyser from "./component/Analyser";
+import HelpMenu from "./component/HelpMenu";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -37,52 +33,6 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const styles = useStyles();
 
-  const { bumblebee } = useBumbleBee();
-
-  const [analyserNode, setAnalyserNode] = useState<AnalyserNode>();
-  const [called, setCalled] = useState(false);
-
-  const setSpeech = useSetRecoilState(userSpeechState);
-
-  const onHotWord = useCallback(
-    async (hotword) => {
-      setCalled(true);
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-      const ctx = new AudioContext();
-      const source = ctx.createMediaStreamSource(stream);
-      const analyser = ctx.createAnalyser();
-      source.connect(analyser);
-
-      setAnalyserNode(analyser);
-
-      const recorder = new Recorder(stream, (audio) => {
-        // resume the mic icon
-        setCalled(false);
-        // set recorded audio to trigger wit.ai
-        setSpeech(audio);
-        bumblebee?.start();
-        console.log(URL.createObjectURL(audio));
-      });
-      bumblebee?.stop();
-      recorder.start();
-    },
-    [bumblebee]
-  );
-
-  useEffect(() => {
-    if (bumblebee) {
-      console.debug("start bumblebee");
-      bumblebee.on("hotword", onHotWord);
-      bumblebee.start();
-    }
-    return () => {
-      console.debug("stop bumblebee");
-      bumblebee?.stop();
-    };
-  }, [bumblebee, onHotWord]);
-
   return (
     <>
       <CssBaseline />
@@ -94,13 +44,16 @@ function App() {
         className={styles.container}
       >
         <Grid container justify="center" alignContent="center" item xs={9}>
-          <Paper className={styles.paper}>
-            <Dropzone onFilesAdded={() => {}} />
-          </Paper>
+          <Album />
         </Grid>
         <Grid container justify="center" alignContent="center" item xs={3}>
-          {called ? <Spectrum analyserNode={analyserNode} /> : <MicIcon />}
+          <React.Suspense fallback={<div>analysing...</div>}>
+            <Analyser />
+          </React.Suspense>
         </Grid>
+        <React.Suspense fallback={<></>}>
+          <HelpMenu />
+        </React.Suspense>
       </Grid>
     </>
   );

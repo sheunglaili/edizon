@@ -21,6 +21,7 @@ const options = () => ({
 const callback = (res) => {
   return (error, response, body) => {
     if (!error && response.statusCode === 200) {
+      console.log(body)
       res.set("Content-Type", "application/json");
       res.send(body);
     } else {
@@ -35,13 +36,12 @@ const callback = (res) => {
  */
 app.post("/wit/speech", (req, res) => {
   const request_option = options();
-  console.log(request_option);
   const handler = callback(res);
   req.pipe(request(request_option, handler));
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.SERVER_PORT || 8080;
 
 app.listen(PORT, () => {
-  console.log("Express server is running on port 3001");
+  console.log("Express server is running on port " , process.env.SERVER_PORT);
 });
