@@ -9,9 +9,9 @@ export default class ErrorBoundry extends React.Component<Props> {
     hasError: false,
   };
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return {
-      hasError: true,
+      hasError: true, 
     };
   }
 
