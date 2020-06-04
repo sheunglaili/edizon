@@ -5,8 +5,25 @@ import MicIcon from "@material-ui/icons/Mic";
 import Recorder from "../lib/recorder";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { userSpeechState, nlpQuery } from "../state/nlp";
+import { Fab, Typography, Grid, makeStyles, Link } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    color: theme.palette.primary.contrastText,
+    textTransform: "none",
+  },
+  caption: {
+    paddingTop: "1rem",
+    maxWidth: "100%",
+  },
+  bold: {
+    fontWeight: 700,
+  },
+}));
 
 export default function Analyser() {
+  const styles = useStyles();
+
   const { bumblebee } = useBumbleBee();
 
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode>();
@@ -57,9 +74,37 @@ export default function Analyser() {
     };
   }, [bumblebee, onHotWord]);
 
+  const setIntent = useSetRecoilState(nlpQuery);
+
+  // const onClick = useCallback(
+  //   (evt) => {
+  //     evt.preventDefault();
+  //     setIntent();
+  //   },
+  //   [setIntent]
+  // );
+
   return called ? (
     <Spectrum analyserNode={analyserNode}></Spectrum>
   ) : (
-    <MicIcon />
+    <Grid alignItems="center" container direction="column">
+      <Fab onClick={onHotWord}>
+        <MicIcon />
+      </Fab>
+      <Grid
+        className={styles.caption}
+        container
+        alignItems="center"
+        direction="column"
+      >
+        <Typography variant="caption">
+          Say <span className={styles.bold}> Bumblebee , What can I do </span>
+        </Typography>
+        <Typography variant="caption">or</Typography>
+        <Link  className={styles.button} variant="caption">
+          click here
+        </Link>
+      </Grid>
+    </Grid>
   );
 }

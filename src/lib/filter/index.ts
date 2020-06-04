@@ -1,16 +1,6 @@
 import { fabric } from "fabric";
 import Lanrange from "../lagrange";
-import juno from "./juno";
-import lark from "./lark";
-import reyes from "./reyes";
-
-const map: {
-  [key: string]: { r: number[][]; g: number[][]; b: number[][] };
-} = {
-  juno,
-  lark,
-  reyes,
-};
+import map from './filter'
 
 // create fabric filter class
 export default fabric.util.createClass(fabric.Image.filters.BaseFilter, {

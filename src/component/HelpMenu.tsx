@@ -37,10 +37,15 @@ const instructions: Instruction[] = [
     secondary: "Show help menu to show you command",
     action: "ask_for_help",
   },
+  {
+    primary: "Clear the canvas",
+    secondary: "Clear the canvas for your next operation",
+    action: "clear",
+  },
 ];
 
 export default function HelpMenu() {
-  const intent = useRecoilValue(nlpQuery);
+  const { intents } = useRecoilValue(nlpQuery);
   const [open, setOpen] = useState(false);
 
   const onClose = useCallback(() => {
@@ -48,10 +53,10 @@ export default function HelpMenu() {
   }, []);
 
   useEffect(() => {
-    if (intent?.intents[0]?.name === "ask_for_help") {
+    if (intents[0]?.name === "ask_for_help") {
       setOpen(true);
     }
-  }, [intent]);
+  }, [intents]);
 
   return (
     <Dialog open={open} onClose={onClose} TransitionComponent={Transition}>

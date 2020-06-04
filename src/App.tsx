@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
   },
   item: {
-    flex: "1 0 auto",
+    flexBasis: "25%",
   },
 }));
 
@@ -41,12 +41,13 @@ function App() {
         direction="column"
         justify="center"
         alignItems="center"
+        alignContent="center"
         className={styles.container}
       >
         <Grid container justify="center" alignContent="center" item xs={9}>
           <Album />
         </Grid>
-        <Grid container justify="center" alignContent="center" item xs={3}>
+        <Grid className={styles.item} item>
           <React.Suspense fallback={<div>analysing...</div>}>
             <Analyser />
           </React.Suspense>

@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import { fabric } from "fabric";
 import { makeStyles } from "@material-ui/core";
+import { useRecoilValueLoadable } from "recoil";
+import { nlpQuery, NLPResponse } from "../state/nlp/selector";
 
 interface Props {
   imgURL: string;
@@ -50,7 +52,6 @@ export default function Canvas({ imgURL }: Props) {
         canvas?.getHeight() &&
         canvas?.getWidth()
       ) {
-
         resize();
         const cWidth = canvas.getWidth();
         const cHeight = canvas.getHeight();
@@ -80,6 +81,24 @@ export default function Canvas({ imgURL }: Props) {
       }
     });
   }, [imgURL, styles, resize]);
+
+  const { state, contents } = useRecoilValueLoadable(nlpQuery);
+
+  useEffect(() => {
+    if (state === "hasValue") {
+      const { intents, entities } = contents as NLPResponse;
+      const intent = intents[0]?.name;
+
+      if (intent === "apply_filter") {
+        const [{ value }] = entities["vedit_filter:vedit_filter"];
+        if (value) {
+          console.log("applying filter ", value);
+        } else {
+          console.log("could not process filter", value);
+        }
+      }
+    }
+  }, [state, contents]);
 
   return <canvas className={styles.canvas} id="c"></canvas>;
 }
