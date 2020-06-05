@@ -1,17 +1,13 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, MouseEvent } from "react";
 import Spectrum from "./Spectrum";
 import { useBumbleBee } from "../lib/bumblebee-provider";
 import MicIcon from "@material-ui/icons/Mic";
 import Recorder from "../lib/recorder";
 import { useSetRecoilState, useRecoilValue } from "recoil";
-import { userSpeechState, nlpQuery } from "../state/nlp";
+import { userSpeechState, nlpQuery, intentState } from "../state/nlp";
 import { Fab, Typography, Grid, makeStyles, Link } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-  button: {
-    color: theme.palette.primary.contrastText,
-    textTransform: "none",
-  },
   caption: {
     paddingTop: "1rem",
     maxWidth: "100%",
@@ -19,17 +15,21 @@ const useStyles = makeStyles((theme) => ({
   bold: {
     fontWeight: 700,
   },
+  button: {
+    color: theme.palette.primary.contrastText,
+    textTransform: "none",
+  },
 }));
 
 export default function Analyser() {
-  const styles = useStyles();
-
   const { bumblebee } = useBumbleBee();
+  const styles = useStyles();
 
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode>();
   const [called, setCalled] = useState(false);
 
   const setSpeech = useSetRecoilState(userSpeechState);
+  const setIntent = useSetRecoilState(intentState);
 
   const intent = useRecoilValue(nlpQuery);
 
@@ -51,6 +51,11 @@ export default function Analyser() {
       const recorder = new Recorder(stream, ctx, (audio) => {
         // resume the mic icon
         setCalled(false);
+        // clear manual message if audio is input
+        setIntent({
+          intent: "",
+          entities: {},
+        });
         // set recorded audio to trigger wit.ai
         setSpeech(audio);
         bumblebee?.start();
@@ -59,7 +64,7 @@ export default function Analyser() {
       bumblebee?.stop();
       recorder.start();
     },
-    [bumblebee, setSpeech]
+    [bumblebee, setSpeech, setIntent]
   );
 
   useEffect(() => {
@@ -73,16 +78,6 @@ export default function Analyser() {
       bumblebee?.stop();
     };
   }, [bumblebee, onHotWord]);
-
-  const setIntent = useSetRecoilState(nlpQuery);
-
-  // const onClick = useCallback(
-  //   (evt) => {
-  //     evt.preventDefault();
-  //     setIntent();
-  //   },
-  //   [setIntent]
-  // );
 
   return called ? (
     <Spectrum analyserNode={analyserNode}></Spectrum>
@@ -98,10 +93,21 @@ export default function Analyser() {
         direction="column"
       >
         <Typography variant="caption">
-          Say <span className={styles.bold}> Bumblebee , What can I do </span>
+          Say <span className={styles.bold}>Bumblebee</span> then
+          <span className={styles.bold}> What can I do </span>
         </Typography>
         <Typography variant="caption">or</Typography>
-        <Link  className={styles.button} variant="caption">
+        <Link
+          onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
+            evt.preventDefault();
+            setIntent({
+              intent: "ask_for_help",
+              entities: {},
+            });
+          }}
+          className={styles.button}
+          variant="caption"
+        >
           click here
         </Link>
       </Grid>

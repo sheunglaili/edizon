@@ -2,7 +2,8 @@ import React, { useRef, useEffect, useCallback } from "react";
 import { fabric } from "fabric";
 import { makeStyles } from "@material-ui/core";
 import { useRecoilValueLoadable } from "recoil";
-import { nlpQuery, NLPResponse } from "../state/nlp/selector";
+import { AnalysedIntent, intentState } from "../state/nlp/selector";
+import InstagramFilter from "../lib/filter";
 
 interface Props {
   imgURL: string;
@@ -77,26 +78,33 @@ export default function Canvas({ imgURL }: Props) {
 
         oImg.scaleToHeight(newHeight);
         oImg.scaleToWidth(newWidth);
-        canvas.add(oImg);
+        canvas.setOverlayImage(oImg, () => {});
       }
     });
   }, [imgURL, styles, resize]);
 
-  const { state, contents } = useRecoilValueLoadable(nlpQuery);
+  const { state, contents } = useRecoilValueLoadable(intentState);
 
   useEffect(() => {
     if (state === "hasValue") {
-      const { intents, entities } = contents as NLPResponse;
-      const intent = intents[0]?.name;
+      const { intent, entities } = contents as AnalysedIntent;
 
       if (intent === "apply_filter") {
         const [{ value }] = entities["vedit_filter:vedit_filter"];
         if (value) {
           console.log("applying filter ", value);
+          const filter = new InstagramFilter({ filterName: value });
+          const { current: canvas } = canvasRef;
+          if (canvas) {
+            const img = canvas.overlayImage;
+            img?.applyFilters([filter]);
+          }
         } else {
           console.log("could not process filter", value);
         }
       }
+    } else {
+      console.log(contents);
     }
   }, [state, contents]);
 
