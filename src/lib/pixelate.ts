@@ -1,6 +1,6 @@
 import { Entities } from "../state/nlp/selector";
 import { fabric } from "fabric";
-import { applyFilters, parseIntWithDefault ,locateAndRemoveFilters } from "./utils";
+import { applyFilters, parseIntWithDefault  } from "./utils";
 
 export function pixelate(canvas: any, entities: Entities) {
   const [{ value }] = entities["grid_size:size"];

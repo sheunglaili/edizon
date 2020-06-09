@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { applyFilters , locateAndRemoveFilters   } from './utils'
+import { applyFilters , locateFilters   } from './utils'
 import { Entities } from "../state/nlp/selector";
 
 
@@ -11,14 +11,13 @@ export function updateBlurriness(canvas: any, blurriness: number) {
 }
 
 export function setBlurriness(canvas: any, entities: Entities) {
-  locateAndRemoveFilters(canvas, "Blur");
   const [{ value }] = entities["wit$number:number"];
   const blurriness = parseInt(value) / 100;
   updateBlurriness(canvas, blurriness > 1 ? 1 : blurriness);
 }
 
 export function getAndRemovePreviousBlurriness(canvas: any) {
-  const oldBlurFilter = locateAndRemoveFilters(canvas, "Blur");
+  const oldBlurFilter = locateFilters(canvas, "Blur");
   return oldBlurFilter ? oldBlurFilter.blur : 0;
 }
 
