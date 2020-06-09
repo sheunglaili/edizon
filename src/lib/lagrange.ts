@@ -19,68 +19,60 @@ export default class Lagrange {
   private ys: number[];
   private ws: number[];
 
-  constructor(x1: number, x2: number, y1: number, y2: number) {
+  constructor(x1: number, y1: number, x2: number, y2: number) {
     this.xs = [x1, x2];
     this.ys = [y1, y2];
     this.ws = [];
-    this.updateWeight();
+    this.updateWeights();
   }
 
   /**
-   * @summary Add a new point to the polynomial. L(x) = y
-   * @param x {Number}
-   * @param y {Number}
-   * @return {Number} The index of the added point.
+   * Adds a new point to the polynomial. L(x) = y
+   * @return {Number} The index of the added point. Used for changing the point. See changePoint.
    */
-  public addPoint(x: number, y: number): number {
+  addPoint(x: number, y: number) {
     this.xs.push(x);
     this.ys.push(y);
-    this.updateWeight();
+    this.updateWeights();
     return this.xs.length - 1;
   }
-
   /**
-   * @summary Recalculate barycentric weights
+   * Recalculate barycentric weights.
    */
-  private updateWeight(): void {
-    const len = this.xs.length;
+  private updateWeights() {
+    let len = this.xs.length; // the number of points
     let weight;
-    for (let i = 0; i < len; ++i) {
+    for (let j = 0; j < len; ++j) {
       weight = 1;
-      for (let j = 0; j < len; ++j) {
-        if (j !== i) {
-          weight *= this.xs[i] - this.xs[j];
+      for (let i = 0; i < len; ++i) {
+        if (i !== j) {
+          weight *= this.xs[j] - this.xs[i];
         }
       }
-      this.ws[i] = 1 / weight;
+      this.ws[j] = 1 / weight;
     }
   }
-
   /**
    * Calculate L(x)
-   * @param x
    */
-  public valueOf(x: number): number {
-    let a = 0,
-      b = 0,
-      c = 0;
-
-    const len = this.xs.length;
-    for (let i = 0; i < len; ++i) {
-      if (x !== this.xs[i]) {
-        a = this.ws[i] / (x - this.xs[i]);
-        b += a * this.ys[i];
+  valueOf(x: number) {
+    let a = 0;
+    let b = 0;
+    let c = 0;
+    for (let j = 0; j < this.xs.length; ++j) {
+      if (x !== this.xs[j]) {
+        a = this.ws[j] / (x - this.xs[j]);
+        b += a * this.ys[j];
         c += a;
       } else {
-        return this.ys[i];
+        return this.ys[j];
       }
     }
     return b / c;
   }
 
-  public addMultiPoints(arr: number[][]) : void {
-    const len = arr.length;
-    for (let i = 0; i < len; i++) {
+  addMultiPoints(arr: number[][]) {
+    for (let i = 0, n = arr.length; i < n; i++) {
       if (arr[i][0] !== 0 && arr[i][0] !== 1) {
         this.addPoint(arr[i][1], arr[i][2]);
       }

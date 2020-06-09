@@ -2,8 +2,9 @@ import React, { useRef, useEffect, useCallback } from "react";
 import { fabric } from "fabric";
 import { makeStyles } from "@material-ui/core";
 import { useRecoilValueLoadable } from "recoil";
-import { AnalysedIntent, intentState } from "../state/nlp/selector";
+import { AnalysedIntent, intentState, Entities } from "../state/nlp/selector";
 import InstagramFilter from "../lib/filter";
+import reduce from "../lib/canvas-reducer";
 
 interface Props {
   imgURL: string;
@@ -17,7 +18,7 @@ const useStyles = makeStyles({
 });
 
 export default function Canvas({ imgURL }: Props) {
-  const canvasRef = useRef<fabric.StaticCanvas>();
+  const canvasRef = useRef<any>();
 
   const styles = useStyles();
 
@@ -46,7 +47,7 @@ export default function Canvas({ imgURL }: Props) {
 
     console.log(imgURL);
 
-    fabric.Image.fromURL(imgURL, function (oImg) {
+    fabric.Image.fromURL(imgURL, function (oImg: any) {
       if (
         oImg.height &&
         oImg.width &&
@@ -83,30 +84,29 @@ export default function Canvas({ imgURL }: Props) {
     });
   }, [imgURL, styles, resize]);
 
+  const applyFilters = useCallback((filter: any) => {
+    console.log("applying filter ", filter);
+    const { current: canvas } = canvasRef;
+    if (canvas) {
+      const img = canvas.overlayImage;
+      img?.filters?.push(filter);
+      img?.applyFilters();
+      canvas.renderAll();
+    }
+  }, []);
+
   const { state, contents } = useRecoilValueLoadable(intentState);
 
   useEffect(() => {
     if (state === "hasValue") {
-      const { intent, entities } = contents as AnalysedIntent;
-
-      if (intent === "apply_filter") {
-        const [{ value }] = entities["vedit_filter:vedit_filter"];
-        if (value) {
-          console.log("applying filter ", value);
-          const filter = new InstagramFilter({ filterName: value });
-          const { current: canvas } = canvasRef;
-          if (canvas) {
-            const img = canvas.overlayImage;
-            img?.applyFilters([filter]);
-          }
-        } else {
-          console.log("could not process filter", value);
-        }
+      const { current: canvas } = canvasRef;
+      if (canvas) {
+        reduce(contents as AnalysedIntent, { canvas });
       }
     } else {
       console.log(contents);
     }
-  }, [state, contents]);
+  }, [state, contents, applyFilters]);
 
   return <canvas className={styles.canvas} id="c"></canvas>;
 }

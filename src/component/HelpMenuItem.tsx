@@ -92,7 +92,7 @@ export default function HelpMenuItem({
           <form onSubmit={(evt) => dispatchIntentWithParam(evt, action)}>
             {entities?.map(({ key, name, type, description, required }) => (
               <ListItem className={styles.nested}>
-                <FormControl variant="outlined">
+                <FormControl fullWidth variant="outlined">
                   <InputLabel htmlFor={key}>{name}</InputLabel>
                   <Input name={key} type={type} id={key} required={required} />
                   <FormHelperText variant="outlined" id={`${key}-text`}>

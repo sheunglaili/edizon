@@ -9,6 +9,13 @@ import cyan from "@material-ui/core/colors/cyan";
 import BumbleBeeProvider from "./lib/bumblebee-provider";
 import bumblebee from "./initBumblebee";
 import { RecoilRoot } from "recoil";
+import { fabric } from "fabric";
+
+//workaround for bad typing
+fabric.filterBackend  = new fabric.Canvas2dFilterBackend();
+// if (((fabric as unknown) as any).isWebglSupported) {
+//   fabric.textureSize = (fabric as unknown as any).maxTextureSize;
+// }
 
 const theme = createMuiTheme({
   palette: {

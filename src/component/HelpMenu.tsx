@@ -10,11 +10,13 @@ import {
 } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import HelpMenuItem from "./HelpMenuItem";
+import instructions from '../help-menu'
 
 interface Parameter {
   name: string;
   key: string;
   description?: string;
+  default?: string;
   required: boolean;
   type?: "text" | "password" | "number";
 }
@@ -39,26 +41,6 @@ const Transition = React.forwardRef<any, TransitionProps>(
   }
 );
 
-const instructions: Instruction[] = [
-  {
-    primary: "Clear the canvas",
-    secondary: "Clear the canvas for your next operation",
-    action: "clear",
-  },
-  {
-    primary: "Apply Filter 'name'",
-    secondary: "Apply the filter to canvas",
-    action: "apply_filter",
-    entities: [
-      {
-        name: "Filter name",
-        key: "vedit_filter:vedit_filter",
-        description: "The filter name you wanna apply to the canvas",
-        required: true,
-      },
-    ],
-  },
-];
 
 export default function HelpMenu() {
   const [{ intent }] = useRecoilState(intentState);
@@ -75,7 +57,7 @@ export default function HelpMenu() {
 
   const onDispatch = useCallback(() => {
     setOpen(false);
-    console.log('close')
+    console.log("close");
   }, []);
 
   useEffect(() => {
