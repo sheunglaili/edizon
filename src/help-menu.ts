@@ -44,6 +44,20 @@ export default [
     ],
   },
   {
+    primary: "Blur my background by five",
+    secondary: "Set background blurriness of photo to value you ask for",
+    action: "blur_background",
+    entities: [
+      {
+        name: "Percentage",
+        key: "wit$number:number",
+        description: "The percentage you want to increase",
+        type: "number",
+        required: true,
+      },
+    ],
+  },
+  {
     primary: "Set blurriness to five",
     secondary: "Set blurriness of photo to value you ask for",
     action: "set_blurriness",

@@ -21,6 +21,7 @@
     "express": "^4.17.1",
     "fabric": "^3.6.3",
     "hark": "^1.2.3",
+    "ml5": "^0.5.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
@@ -51,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "@types/bumblebee-hotword": "^0.0.0",
     "@types/hark": "^1.2.0",
     "@types/recoil": "^0.0.0",
     "@types/recorder-js": "^1.0.1"

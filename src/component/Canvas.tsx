@@ -3,7 +3,6 @@ import { fabric } from "fabric";
 import { makeStyles } from "@material-ui/core";
 import { useRecoilValueLoadable } from "recoil";
 import { AnalysedIntent, intentState, Entities } from "../state/nlp/selector";
-import InstagramFilter from "../lib/filter";
 import reduce from "../lib/canvas-reducer";
 
 interface Props {

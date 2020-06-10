@@ -1,7 +1,12 @@
 import { AnalysedIntent, Entities } from "../state/nlp/selector";
-import InstagramFilter from "./filter";
+import { Instagram } from "./filter";
 import { applyFilters } from "./utils";
-import { setBlurriness, increaseBlurriness, decreaseBlurriness } from "./blur";
+import {
+  setBlurriness,
+  increaseBlurriness,
+  decreaseBlurriness,
+  blurBackground,
+} from "./blur";
 import {
   setBrightness,
   increaseBrightness,
@@ -22,7 +27,7 @@ interface ReducerMap {
 
 function applyInstagramFilters(canvas: any, entities: Entities) {
   const [{ value }] = entities["vedit_filter:vedit_filter"];
-  const filter = new InstagramFilter({ filterName: value });
+  const filter = new Instagram({ filterName: value });
   applyFilters(canvas, filter);
 }
 
@@ -54,6 +59,7 @@ const rootReducer: ReducerMap = {
   set_blurriness: setBlurriness,
   increase_blurriness: increaseBlurriness,
   decrease_blurriness: decreaseBlurriness,
+  blur_background: blurBackground,
   set_brightness: setBrightness,
   increase_brightness: increaseBrightness,
   decrease_brightness: decreaseBrightness,

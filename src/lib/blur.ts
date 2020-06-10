@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
-import { applyFilters , locateFilters   } from './utils'
+import { applyFilters, locateFilters, parseIntWithDefault , round } from "./utils";
 import { Entities } from "../state/nlp/selector";
-
+import { BodyPix } from "./filter";
 
 export function updateBlurriness(canvas: any, blurriness: number) {
   const filter = new fabric.Image.filters.Blur({
@@ -16,21 +16,30 @@ export function setBlurriness(canvas: any, entities: Entities) {
   updateBlurriness(canvas, blurriness > 1 ? 1 : blurriness);
 }
 
-export function getAndRemovePreviousBlurriness(canvas: any) {
+export function getPreviousBlurriness(canvas: any) {
   const oldBlurFilter = locateFilters(canvas, "Blur");
   return oldBlurFilter ? oldBlurFilter.blur : 0;
 }
 
 export function increaseBlurriness(canvas: any, entities: Entities) {
-  const oldBlurriness = getAndRemovePreviousBlurriness(canvas);
+  const oldBlurriness = getPreviousBlurriness(canvas);
   const [{ value }] = entities["wit$number:number"];
   const newBlurriness = oldBlurriness + parseInt(value) / 100;
   updateBlurriness(canvas, newBlurriness > 1 ? 1 : newBlurriness);
 }
 
 export function decreaseBlurriness(canvas: any, entities: Entities) {
-  const oldBlurriness = getAndRemovePreviousBlurriness(canvas);
+  const oldBlurriness = getPreviousBlurriness(canvas);
   const [{ value }] = entities["wit$number:number"];
   const newBlurriness = oldBlurriness - parseInt(value) / 100;
   updateBlurriness(canvas, newBlurriness < 0 ? 0 : newBlurriness);
+}
+
+export function blurBackground(canvas: any, entities: Entities) {
+  const [{ value }] = entities["wit$number:number"];
+  const blurriness = parseIntWithDefault(value, 5) / 100;
+  const filter = new BodyPix({
+    blur: round(blurriness),
+  });
+  applyFilters(canvas, filter);
 }

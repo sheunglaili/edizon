@@ -11,11 +11,9 @@ import bumblebee from "./initBumblebee";
 import { RecoilRoot } from "recoil";
 import { fabric } from "fabric";
 
-//workaround for bad typing
+// use canvas 2d to edit photo as applying ml model
 fabric.filterBackend  = new fabric.Canvas2dFilterBackend();
-// if (((fabric as unknown) as any).isWebglSupported) {
-//   fabric.textureSize = (fabric as unknown as any).maxTextureSize;
-// }
+
 
 const theme = createMuiTheme({
   palette: {
