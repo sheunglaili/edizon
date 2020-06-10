@@ -1,6 +1,5 @@
 import { fabric } from "fabric";
 import * as ml5 from "ml5";
-import { rejects } from "assert";
 
 const BodyPix = fabric.util.createClass(fabric.Image.filters.BaseFilter, {
   type: "BodyPix",
@@ -20,7 +19,6 @@ const BodyPix = fabric.util.createClass(fabric.Image.filters.BaseFilter, {
     if (!options.webgl) await this.applyTo2d(options);
   },
   applyTo2d: async function (options: any) {
-    let modelLoaded = false , finishingBlur = false;
     if (!this.model) {
       this.model = await ml5.bodyPix();
     }
