@@ -33,4 +33,4 @@ export function decreaseContrast(canvas: any, entities: Entities) {
     const [{ value }] = entities["wit$number:number"];
     const contrast = parseInt(value) / 100 - (oldFilter?.contrast || 0);
     updateContrast(canvas, boundarySanitization(contrast, 1, -1));
-  }
+}

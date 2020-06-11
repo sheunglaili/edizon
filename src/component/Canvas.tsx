@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect, useCallback, useState } from "react";
 import { fabric } from "fabric";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Backdrop, CircularProgress } from "@material-ui/core";
 import { useRecoilValueLoadable } from "recoil";
 import { AnalysedIntent, intentState, Entities } from "../state/nlp/selector";
 import reduce from "../lib/canvas-reducer";
@@ -9,17 +9,22 @@ interface Props {
   imgURL: string;
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   canvas: {
     width: "100% !important",
     height: "100% !important",
   },
-});
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff",
+  },
+}));
 
 export default function Canvas({ imgURL }: Props) {
   const canvasRef = useRef<any>();
 
   const styles = useStyles();
+  const [loading, setLoading] = useState(false);
 
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
@@ -96,16 +101,33 @@ export default function Canvas({ imgURL }: Props) {
 
   const { state, contents } = useRecoilValueLoadable(intentState);
 
+  const onLoadingFinish = useCallback(() => {
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
     if (state === "hasValue") {
       const { current: canvas } = canvasRef;
       if (canvas) {
-        reduce(contents as AnalysedIntent, { canvas });
+        const intented =
+          (contents as AnalysedIntent).intent &&
+          (contents as AnalysedIntent).intent !== "ask_for_help";
+        if (intented) {
+          setLoading(true);
+        }
+        reduce(contents as AnalysedIntent, { canvas }, onLoadingFinish);
       }
     } else {
       console.log(contents);
     }
-  }, [state, contents, applyFilters]);
+  }, [state, contents, applyFilters, onLoadingFinish]);
 
-  return <canvas className={styles.canvas} id="c"></canvas>;
+  return (
+    <>
+      <canvas className={styles.canvas} id="c"></canvas>
+      <Backdrop className={styles.backdrop} open={loading}>
+        <CircularProgress></CircularProgress>
+      </Backdrop>
+    </>
+  );
 }

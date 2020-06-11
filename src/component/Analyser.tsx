@@ -5,7 +5,14 @@ import MicIcon from "@material-ui/icons/Mic";
 import Recorder from "../lib/recorder";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { userSpeechState, nlpQuery, intentState } from "../state/nlp";
-import { Fab, Typography, Grid, makeStyles, Link } from "@material-ui/core";
+import {
+  Fab,
+  Typography,
+  Grid,
+  makeStyles,
+  Link,
+  Paper,
+} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   caption: {
@@ -19,6 +26,12 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.contrastText,
     textTransform: "none",
   },
+  paper: {
+    background: theme.palette.secondary.main,
+    color: theme.palette.primary.contrastText,
+    padding: "1rem",
+    maxWidth: "300px",
+  },
 }));
 
 export default function Analyser() {
@@ -30,10 +43,6 @@ export default function Analyser() {
 
   const setSpeech = useSetRecoilState(userSpeechState);
   const setIntent = useSetRecoilState(intentState);
-
-  const intent = useRecoilValue(nlpQuery);
-
-  console.log(intent);
 
   const onHotWord = useCallback(
     async (hotword) => {
@@ -59,7 +68,6 @@ export default function Analyser() {
         // set recorded audio to trigger wit.ai
         setSpeech(audio);
         bumblebee?.start();
-        console.log(URL.createObjectURL(audio));
       });
       bumblebee?.stop();
       recorder.start();
@@ -79,38 +87,42 @@ export default function Analyser() {
     };
   }, [bumblebee, onHotWord]);
 
-  return called ? (
-    <Spectrum analyserNode={analyserNode}></Spectrum>
-  ) : (
-    <Grid alignItems="center" container direction="column">
-      <Fab onClick={onHotWord}>
-        <MicIcon />
-      </Fab>
-      <Grid
-        className={styles.caption}
-        container
-        alignItems="center"
-        direction="column"
-      >
-        <Typography variant="caption">
-          Say <span className={styles.bold}>Bumblebee</span> then
-          <span className={styles.bold}> What can I do </span>
-        </Typography>
-        <Typography variant="caption">or</Typography>
-        <Link
-          onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
-            evt.preventDefault();
-            setIntent({
-              intent: "ask_for_help",
-              entities: {},
-            });
-          }}
-          className={styles.button}
-          variant="caption"
-        >
-          click here
-        </Link>
-      </Grid>
-    </Grid>
+  return (
+    <Paper className={styles.paper}>
+      {called ? (
+        <Spectrum analyserNode={analyserNode}></Spectrum>
+      ) : (
+        <Grid alignItems="center" container direction="column">
+          <Fab onClick={onHotWord}>
+            <MicIcon />
+          </Fab>
+          <Grid
+            className={styles.caption}
+            container
+            alignItems="center"
+            direction="column"
+          >
+            <Typography variant="caption">
+              Say <span className={styles.bold}>Bumblebee</span> then
+              <span className={styles.bold}> What can I do </span>
+            </Typography>
+            <Typography variant="caption">or</Typography>
+            <Link
+              onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
+                evt.preventDefault();
+                setIntent({
+                  intent: "ask_for_help",
+                  entities: {},
+                });
+              }}
+              className={styles.button}
+              variant="caption"
+            >
+              click here
+            </Link>
+          </Grid>
+        </Grid>
+      )}
+    </Paper>
   );
 }

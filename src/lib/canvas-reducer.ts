@@ -22,7 +22,7 @@ interface Deps {
 }
 
 interface ReducerMap {
-  [intent: string]: (canvas: any, entities: Entities) => void;
+  [intent: string]: (canvas: any, entities: Entities) => void | Promise<void>;
 }
 
 function applyInstagramFilters(canvas: any, entities: Entities) {
@@ -73,8 +73,19 @@ const rootReducer: ReducerMap = {
   export_image: exportImage,
 };
 
-export default function reducer(action: AnalysedIntent, { canvas }: Deps) {
+export default function reducer(
+  action: AnalysedIntent,
+  { canvas }: Deps,
+  callback: () => void = () => {}
+) {
   const { intent, entities } = action;
   const handler = rootReducer[intent];
-  if (handler) handler(canvas, entities);
+  if (handler) {
+    const res = handler(canvas, entities);
+    if (res && res instanceof Promise) {
+      res.then(callback);
+    } else {
+      callback();
+    }
+  }
 }
