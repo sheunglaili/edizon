@@ -1,6 +1,7 @@
 import { fabric } from "fabric";
 
 export function locateFilters(img: any, type: string) {
+  console.log(img.filters)
   return img.filters.find((filter: any) => filter.type === type);
 }
 
@@ -35,8 +36,7 @@ export function boundarySanitization(
 export function applyFilters(canvas: any, filter?: any) {
   console.log("applying filter ", filter);
   const img = canvas.overlayImage;
-  console.log(img?.filters);
-  if (filter) {
+  if (filter && img) {
     locateAndRemoveFilters(canvas, filter.type);
     img?.filters?.push(filter);
   }

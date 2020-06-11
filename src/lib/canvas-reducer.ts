@@ -84,8 +84,7 @@ export default function reducer(
     const res = handler(canvas, entities);
     if (res && res instanceof Promise) {
       res.then(callback);
-    } else {
-      callback();
     }
   }
+  callback();
 }

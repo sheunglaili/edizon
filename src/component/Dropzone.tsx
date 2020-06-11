@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from "react";
 import { Grid, makeStyles, ButtonBase } from "@material-ui/core";
-import ImageIcon from "@material-ui/icons/Image";
+import InstagramIcon from "@material-ui/icons/Instagram";
 import { grey } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
@@ -10,13 +10,14 @@ const useStyles = makeStyles((theme) => ({
   dropzone: {
     border: `3px dashed ${theme.palette.secondary.contrastText}`,
     color: theme.palette.secondary.contrastText,
+    borderRadius : '5px',
     "& input": {
       display: "none",
     },
     "& button": {
       width: "100%",
       height: "100%",
-      borderRadius: "3px",
+      borderRadius: "5px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
@@ -58,9 +59,9 @@ export default function Dropzone({ onFilesAdded }: Props) {
     },
     [onFilesAdded]
   );
-  const onDragOver = useCallback((evt)=>{
+  const onDragOver = useCallback((evt) => {
     evt.preventDefault();
-  }, [])
+  }, []);
   const onClick = useCallback(() => {
     if (fileRef.current) {
       fileRef.current.click();
@@ -88,7 +89,7 @@ export default function Dropzone({ onFilesAdded }: Props) {
             onDrop={onDrop}
             style={{ color: hover ? grey[100] : grey[400] }}
           >
-            <ImageIcon />
+            <InstagramIcon />
             Drag in your image
           </ButtonBase>
           <input ref={fileRef} type="file" multiple onChange={onChange} />

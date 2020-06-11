@@ -3,16 +3,16 @@ import Spectrum from "./Spectrum";
 import { useBumbleBee } from "../lib/bumblebee-provider";
 import MicIcon from "@material-ui/icons/Mic";
 import Recorder from "../lib/recorder";
-import { useSetRecoilState } from "recoil";
-import { userSpeechState, intentState } from "../state/nlp";
 import {
-  Fab,
-  Typography,
-  Grid,
-  makeStyles,
-  Link,
-  Paper,
-} from "@material-ui/core";
+  useSetRecoilState,
+  useRecoilState,
+  useRecoilValue,
+  useRecoilStateLoadable,
+} from "recoil";
+import { userSpeechState, intentState } from "../state/nlp";
+import { Fab, Typography, Grid, makeStyles, Link } from "@material-ui/core";
+import { processing } from "src/state/canvas";
+import Spinner from "src/component/Spinner";
 
 const useStyles = makeStyles((theme) => ({
   caption: {
@@ -26,11 +26,11 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.contrastText,
     textTransform: "none",
   },
-  paper: {
-    background: theme.palette.secondary.main,
-    color: theme.palette.primary.contrastText,
-    padding: "1rem",
-    width: "300px",
+  spinner: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
   },
 }));
 
@@ -42,7 +42,8 @@ export default function Analyser() {
   const [called, setCalled] = useState(false);
 
   const setSpeech = useSetRecoilState(userSpeechState);
-  const setIntent = useSetRecoilState(intentState);
+  const [{ state }, setIntent] = useRecoilStateLoadable(intentState);
+  const loading = useRecoilValue(processing);
 
   const onHotWord = useCallback(
     async (hotword) => {
@@ -87,42 +88,45 @@ export default function Analyser() {
     };
   }, [bumblebee, onHotWord]);
 
-  return (
-    <Paper className={styles.paper}>
-      {called ? (
-        <Spectrum analyserNode={analyserNode}></Spectrum>
-      ) : (
-        <Grid alignItems="center" container direction="column">
-          <Fab onClick={onHotWord}>
-            <MicIcon />
-          </Fab>
-          <Grid
-            className={styles.caption}
-            container
-            alignItems="center"
-            direction="column"
-          >
-            <Typography variant="caption">
-              Say <span className={styles.bold}>Bumblebee</span> then
-              <span className={styles.bold}> What can I do </span>
-            </Typography>
-            <Typography variant="caption">or</Typography>
-            <Link
-              onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
-                evt.preventDefault();
-                setIntent({
-                  intent: "ask_for_help",
-                  entities: {},
-                });
-              }}
-              className={styles.button}
-              variant="caption"
-            >
-              click here
-            </Link>
-          </Grid>
-        </Grid>
-      )}
-    </Paper>
+  console.log(loading)
+  console.log(state)
+
+  return loading || state === "loading" ? (
+    <div className={styles.spinner}>
+      <Spinner />
+    </div>
+  ) : called ? (
+    <Spectrum analyserNode={analyserNode}></Spectrum>
+  ) : (
+    <Grid alignItems="center" container direction="column">
+      <Fab onClick={onHotWord}>
+        <MicIcon />
+      </Fab>
+      <Grid
+        className={styles.caption}
+        container
+        alignItems="center"
+        direction="column"
+      >
+        <Typography variant="caption">
+          Say <span className={styles.bold}>Bumblebee</span> then
+          <span className={styles.bold}> What can I do </span>
+        </Typography>
+        <Typography variant="caption">or</Typography>
+        <Link
+          onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
+            evt.preventDefault();
+            setIntent({
+              intent: "ask_for_help",
+              entities: {},
+            });
+          }}
+          className={styles.button}
+          variant="caption"
+        >
+          click here
+        </Link>
+      </Grid>
+    </Grid>
   );
 }

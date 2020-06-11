@@ -22,7 +22,7 @@ export function setBlurriness(canvas: any, entities: Entities) {
 }
 
 export function getPreviousBlurriness(canvas: any) {
-  const oldBlurFilter = locateFilters(canvas, "Blur");
+  const oldBlurFilter = locateFilters(canvas.overlayImage, "Blur");
   return oldBlurFilter ? oldBlurFilter.blur : 0;
 }
 

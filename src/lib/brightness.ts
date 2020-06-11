@@ -8,7 +8,7 @@ import {
 import { Entities } from "../state/nlp/selector";
 
 export function getPreviousBrightness(canvas: any) {
-  const oldBrightnessFilter = locateFilters(canvas, "Brightness");
+  const oldBrightnessFilter = locateFilters(canvas.overlayImage, "Brightness");
   return oldBrightnessFilter?.brightness || 0;
 }
 

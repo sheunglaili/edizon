@@ -21,14 +21,14 @@ export function setContrast(canvas: any, entities: Entities) {
 }
 
 export function increaseContrast(canvas: any, entities: Entities) {
-  const oldFilter = locateFilters(canvas, "Contrast");
+  const oldFilter = locateFilters(canvas.overlayImage, "Contrast");
   const [{ value }] = entities["wit$number:number"];
   const contrast = parseInt(value) / 100 + (oldFilter?.contrast || 0);
   updateContrast(canvas, boundarySanitization(contrast, 1, -1));
 }
 
 export function decreaseContrast(canvas: any, entities: Entities) {
-    const oldFilter = locateFilters(canvas, "Contrast");
+    const oldFilter = locateFilters(canvas.overlayImage, "Contrast");
     const [{ value }] = entities["wit$number:number"];
     const contrast = parseInt(value) / 100 - (oldFilter?.contrast || 0);
     updateContrast(canvas, boundarySanitization(contrast, 1, -1));

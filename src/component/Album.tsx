@@ -30,7 +30,7 @@ export default function Album() {
 
   useEffect(() => {
     if (state === "hasValue") {
-      const { intents  } = contents as NLPResponse;
+      const { intents } = contents as NLPResponse;
       const intent = intents[0]?.name;
 
       if (intent === "clear") {
@@ -38,7 +38,7 @@ export default function Album() {
         setImgURL("");
       }
     } else if (state === "hasError") {
-      //handle error 
+      //handle error
     }
   }, [state, contents]);
 

@@ -1,9 +1,10 @@
-import React, { useRef, useEffect, useCallback, useState } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { fabric } from "fabric";
-import { makeStyles, Backdrop, CircularProgress } from "@material-ui/core";
-import { useRecoilValueLoadable } from "recoil";
+import { makeStyles } from "@material-ui/core";
+import { useRecoilStateLoadable, useRecoilState } from "recoil";
 import { AnalysedIntent, intentState } from "../state/nlp/selector";
 import reduce from "../lib/canvas-reducer";
+import { processing } from "../state/canvas";
 
 interface Props {
   imgURL: string;
@@ -24,7 +25,7 @@ export default function Canvas({ imgURL }: Props) {
   const canvasRef = useRef<any>();
 
   const styles = useStyles();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useRecoilState(processing);
 
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
@@ -99,11 +100,13 @@ export default function Canvas({ imgURL }: Props) {
     }
   }, []);
 
-  const { state, contents } = useRecoilValueLoadable(intentState);
+  const [{ state, contents }, setIntentState] = useRecoilStateLoadable(
+    intentState
+  );
 
   const onLoadingFinish = useCallback(() => {
     setLoading(false);
-  }, []);
+  }, [setLoading]);
 
   useEffect(() => {
     if (state === "hasValue") {
@@ -115,19 +118,25 @@ export default function Canvas({ imgURL }: Props) {
         if (intented) {
           setLoading(true);
         }
-        reduce(contents as AnalysedIntent, { canvas }, onLoadingFinish);
+        reduce(contents as AnalysedIntent, { canvas }, () => {
+          onLoadingFinish();
+          setIntentState({
+            intent: "",
+            entities: {},
+          });
+        });
       }
     } else {
       console.log(contents);
     }
-  }, [state, contents, applyFilters, onLoadingFinish]);
+  }, [
+    state,
+    contents,
+    applyFilters,
+    onLoadingFinish,
+    setIntentState,
+    setLoading,
+  ]);
 
-  return (
-    <>
-      <canvas className={styles.canvas} id="c"></canvas>
-      <Backdrop className={styles.backdrop} open={loading}>
-        <CircularProgress></CircularProgress>
-      </Backdrop>
-    </>
-  );
+  return <canvas className={styles.canvas} id="c"></canvas>;
 }

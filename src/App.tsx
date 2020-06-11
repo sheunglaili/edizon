@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import Paper from "@material-ui/core/Paper";
 import Album from "./component/Album";
 import Analyser from "./component/Analyser";
 import HelpMenu from "./component/HelpMenu";
@@ -28,6 +29,12 @@ const useStyles = makeStyles((theme) => ({
   item: {
     flexBasis: "25%",
   },
+  spectrumPaper: {
+    background: theme.palette.secondary.main,
+    color: theme.palette.primary.contrastText,
+    padding: "1rem",
+    width: "300px",
+  },
 }));
 
 function App() {
@@ -48,9 +55,9 @@ function App() {
           <Album />
         </Grid>
         <Grid className={styles.item} item>
-          <React.Suspense fallback={<div>analysing...</div>}>
+          <Paper className={styles.spectrumPaper}>
             <Analyser />
-          </React.Suspense>
+          </Paper>
         </Grid>
         <React.Suspense fallback={<></>}>
           <HelpMenu />
