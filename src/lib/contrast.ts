@@ -1,7 +1,6 @@
 import { fabric } from "fabric";
 import {
   applyFilters,
-  locateAndRemoveFilters,
   boundarySanitization,
   round,
   locateFilters,

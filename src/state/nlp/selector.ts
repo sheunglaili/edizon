@@ -51,7 +51,10 @@ export const nlpQuery = selector<NLPResponse>({
       return processed;
     } else if (userSpeech) {
       const { data } = await recognise(userSpeech);
-      return data;
+      return {
+        intents: [],
+        ...data,
+      };
     } else {
       return { intents: [] };
     }

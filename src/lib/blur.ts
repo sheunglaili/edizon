@@ -3,7 +3,6 @@ import {
   applyFilters,
   locateFilters,
   parseIntWithDefault,
-  round,
 } from "./utils";
 import { Entities } from "../state/nlp/selector";
 import { BodyPix } from "./filter";

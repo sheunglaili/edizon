@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useCallback, useState } from "react";
 import { fabric } from "fabric";
 import { makeStyles, Backdrop, CircularProgress } from "@material-ui/core";
 import { useRecoilValueLoadable } from "recoil";
-import { AnalysedIntent, intentState, Entities } from "../state/nlp/selector";
+import { AnalysedIntent, intentState } from "../state/nlp/selector";
 import reduce from "../lib/canvas-reducer";
 
 interface Props {

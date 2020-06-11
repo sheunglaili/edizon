@@ -3,8 +3,8 @@ import Spectrum from "./Spectrum";
 import { useBumbleBee } from "../lib/bumblebee-provider";
 import MicIcon from "@material-ui/icons/Mic";
 import Recorder from "../lib/recorder";
-import { useSetRecoilState, useRecoilValue } from "recoil";
-import { userSpeechState, nlpQuery, intentState } from "../state/nlp";
+import { useSetRecoilState } from "recoil";
+import { userSpeechState, intentState } from "../state/nlp";
 import {
   Fab,
   Typography,
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.secondary.main,
     color: theme.palette.primary.contrastText,
     padding: "1rem",
-    maxWidth: "300px",
+    width: "300px",
   },
 }));
 

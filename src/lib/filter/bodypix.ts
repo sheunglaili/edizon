@@ -1,5 +1,4 @@
 import { fabric } from "fabric";
-import * as ml5 from "ml5";
 
 const BodyPix = fabric.util.createClass(fabric.Image.filters.BaseFilter, {
   type: "BodyPix",
