@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import { fabric } from "fabric";
-import { makeStyles } from "@material-ui/core";
-import { useRecoilStateLoadable, useRecoilState } from "recoil";
+import { makeStyles, Theme } from "@material-ui/core";
+import { useRecoilStateLoadable, useRecoilState, useSetRecoilState } from "recoil";
 import { AnalysedIntent, intentState } from "../state/nlp/selector";
 import reduce from "../lib/canvas-reducer";
 import { processing } from "../state/canvas";
@@ -10,7 +10,7 @@ interface Props {
   imgURL: string;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   canvas: {
     width: "100% !important",
     height: "100% !important",
@@ -22,10 +22,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Canvas({ imgURL }: Props) {
+  //   console.log(imgURL)
   const canvasRef = useRef<any>();
 
   const styles = useStyles();
-  const [loading, setLoading] = useRecoilState(processing);
+  const setLoading = useSetRecoilState(processing);
 
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
@@ -84,7 +85,7 @@ export default function Canvas({ imgURL }: Props) {
 
         oImg.scaleToHeight(newHeight);
         oImg.scaleToWidth(newWidth);
-        canvas.setOverlayImage(oImg, () => {});
+        canvas.setOverlayImage(oImg, () => { });
       }
     });
   }, [imgURL, styles, resize]);
@@ -100,7 +101,7 @@ export default function Canvas({ imgURL }: Props) {
     }
   }, []);
 
-  const [{ state, contents }, setIntentState] = useRecoilStateLoadable(
+  const [loadable, setIntentState] = useRecoilStateLoadable(
     intentState
   );
 
@@ -108,8 +109,9 @@ export default function Canvas({ imgURL }: Props) {
     setLoading(false);
   }, [setLoading]);
 
-  useEffect(() => {
-    if (state === "hasValue") {
+  const { state, contents } = loadable;
+  switch (state) {
+    case "hasValue":
       const { current: canvas } = canvasRef;
       if (canvas) {
         const intented =
@@ -117,26 +119,20 @@ export default function Canvas({ imgURL }: Props) {
           (contents as AnalysedIntent).intent !== "ask_for_help";
         if (intented) {
           setLoading(true);
-        }
-        reduce(contents as AnalysedIntent, { canvas }, () => {
-          onLoadingFinish();
-          setIntentState({
-            intent: "",
-            entities: {},
+          reduce(contents as AnalysedIntent, { canvas }, () => {
+            onLoadingFinish();
+            setIntentState({
+              intent: "",
+              entities: {},
+            });
           });
-        });
+        }
+
       }
-    } else {
+      break;
+    default:
       console.log(contents);
-    }
-  }, [
-    state,
-    contents,
-    applyFilters,
-    onLoadingFinish,
-    setIntentState,
-    setLoading,
-  ]);
+  }
 
   return <canvas className={styles.canvas} id="c"></canvas>;
 }

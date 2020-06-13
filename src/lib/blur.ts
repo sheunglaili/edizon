@@ -3,6 +3,7 @@ import {
   applyFilters,
   locateFilters,
   parseIntWithDefault,
+  safelyGetEntities,
 } from "./utils";
 import { Entities } from "../state/nlp/selector";
 import { BodyPix } from "./filter";
@@ -16,7 +17,7 @@ export function updateBlurriness(canvas: any, blurriness: number) {
 }
 
 export function setBlurriness(canvas: any, entities: Entities) {
-  const [{ value }] = entities["wit$number:number"];
+  const value = safelyGetEntities(entities, "wit$number:number") || "0";
   const blurriness = parseInt(value) / 100;
   updateBlurriness(canvas, blurriness > 1 ? 1 : blurriness);
 }
@@ -28,14 +29,14 @@ export function getPreviousBlurriness(canvas: any) {
 
 export function increaseBlurriness(canvas: any, entities: Entities) {
   const oldBlurriness = getPreviousBlurriness(canvas);
-  const [{ value }] = entities["wit$number:number"];
+  const value = safelyGetEntities(entities, "wit$number:number");
   const newBlurriness = oldBlurriness + parseInt(value) / 100;
   updateBlurriness(canvas, newBlurriness > 1 ? 1 : newBlurriness);
 }
 
 export function decreaseBlurriness(canvas: any, entities: Entities) {
   const oldBlurriness = getPreviousBlurriness(canvas);
-  const [{ value }] = entities["wit$number:number"];
+  const value = safelyGetEntities(entities, "wit$number:number");
   const newBlurriness = oldBlurriness - parseInt(value) / 100;
   updateBlurriness(canvas, newBlurriness < 0 ? 0 : newBlurriness);
 }
@@ -49,7 +50,7 @@ async function imageFromUrl(url: string): Promise<any> {
 }
 
 export async function blurBackground(canvas: any, entities: Entities) {
-  const [{ value }] = entities["wit$number:number"];
+  const value = safelyGetEntities(entities, "wit$number:number");
   const blurriness = parseIntWithDefault(value, 5) / 100;
 
   const model = await ml5.bodyPix();

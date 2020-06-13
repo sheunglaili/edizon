@@ -43,8 +43,7 @@ const Transition = React.forwardRef<any, TransitionProps>(
 
 
 export default function HelpMenu() {
-  const [{ intent }] = useRecoilState(intentState);
-  const setIntent = useSetRecoilState(intentState);
+  const [{ intent }, setIntent] = useRecoilState(intentState);
   const [open, setOpen] = useState(false);
 
   const onClose = useCallback(() => {
@@ -61,9 +60,8 @@ export default function HelpMenu() {
   }, []);
 
   useEffect(() => {
-    if (intent === "ask_for_help") {
-      setOpen(true);
-    }
+    const askingForHelp = intent === "ask_for_help"
+    setOpen(askingForHelp); 
   }, [intent, open]);
 
   return (

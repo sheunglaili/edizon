@@ -5,7 +5,6 @@ import MicIcon from "@material-ui/icons/Mic";
 import Recorder from "../lib/recorder";
 import {
   useSetRecoilState,
-  useRecoilState,
   useRecoilValue,
   useRecoilStateLoadable,
 } from "recoil";
@@ -14,7 +13,7 @@ import { Fab, Typography, Grid, makeStyles, Link } from "@material-ui/core";
 import { processing } from "src/state/canvas";
 import Spinner from "src/component/Spinner";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme:any) => ({
   caption: {
     paddingTop: "1rem",
     maxWidth: "100%",
@@ -46,7 +45,7 @@ export default function Analyser() {
   const loading = useRecoilValue(processing);
 
   const onHotWord = useCallback(
-    async (hotword) => {
+    async (hotword : string | MouseEvent) => {
       setCalled(true);
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,

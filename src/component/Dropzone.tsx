@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   dropzone: {
     border: `3px dashed ${theme.palette.secondary.contrastText}`,
     color: theme.palette.secondary.contrastText,
-    borderRadius : '5px',
+    borderRadius: '5px',
     "& input": {
       display: "none",
     },
@@ -45,14 +45,14 @@ export default function Dropzone({ onFilesAdded }: Props) {
     setHover(false);
   }, []);
   const onChange = useCallback(
-    (evt) => {
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
       const { files } = evt.target;
-      onFilesAdded(files);
+      if (files) onFilesAdded(files);
     },
     [onFilesAdded]
   );
   const onDrop = useCallback(
-    (evt) => {
+    (evt: React.DragEvent<HTMLButtonElement>) => {
       evt.preventDefault();
       const { files } = evt.dataTransfer;
       onFilesAdded(files);

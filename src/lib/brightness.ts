@@ -4,6 +4,7 @@ import {
   boundarySanitization,
   parseIntWithDefault,
   locateFilters,
+  safelyGetEntities,
 } from "./utils";
 import { Entities } from "../state/nlp/selector";
 
@@ -20,21 +21,21 @@ export function updateBrightness(canvas: any, brightness: number) {
 }
 
 export function setBrightness(canvas: any, entities: Entities) {
-  const [{ value }] = entities["wit$number:number"];
+  const value  = safelyGetEntities(entities,"wit$number:number");
   const brightness = parseIntWithDefault(value, 5) / 100;
   updateBrightness(canvas, brightness);
 }
 
 export function increaseBrightness(canvas: any, entities: Entities) {
   const oldBrightness = getPreviousBrightness(canvas);
-  const [{ value }] = entities["wit$number:number"];
+  const  value  = safelyGetEntities(entities,"wit$number:number");
   const newBrightness = oldBrightness + parseIntWithDefault(value, 5) / 100;
   updateBrightness(canvas, boundarySanitization(newBrightness, 1, -1));
 }
 
 export function decreaseBrightness(canvas: any, entities: Entities) {
   const oldBrightness = getPreviousBrightness(canvas);
-  const [{ value }] = entities["wit$number:number"];
+  const  value  = safelyGetEntities(entities,"wit$number:number");
   const newBrightness = oldBrightness - parseIntWithDefault(value, 5) / 100;
   updateBrightness(canvas, boundarySanitization(newBrightness, 1, -1));
 }

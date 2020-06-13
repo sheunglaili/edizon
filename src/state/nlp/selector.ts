@@ -7,7 +7,7 @@ const KEY = {
   INTENT: "INTENT",
 };
 
-interface Intent {
+export interface Intent {
   id: number;
   name: string;
   confidence: number;
@@ -58,8 +58,7 @@ export const nlpQuery = selector<NLPResponse>({
     } else {
       return { intents: [] };
     }
-  },
-  set: ({ set }, newValue) => {},
+  }
 });
 
 export const intentState = selector<AnalysedIntent>({
@@ -85,5 +84,6 @@ export const intentState = selector<AnalysedIntent>({
         : [],
       entities: entities,
     });
+    set(userSpeechState,undefined)
   },
 });

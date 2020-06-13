@@ -62,8 +62,8 @@ export default function Album() {
             const [file] = Array.from(files);
             const valid = validateExtensions(file.name);
             if (valid) {
-              setUploaded(true);
               readImage(file);
+              setUploaded(true);
             }
           }}
         />

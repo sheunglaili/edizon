@@ -1,4 +1,5 @@
 import { fabric } from "fabric";
+import { Entities } from "src/state/nlp";
 
 export function locateFilters(img: any, type: string) {
   console.log(img.filters)
@@ -57,4 +58,20 @@ export function parseIntWithDefault(numStr: string, defaultNum: number) {
 export function round(num: number, decimanPlace: number = 2) {
   let pow = Math.pow(10, decimanPlace);
   return Math.round(num * pow) / pow;
+}
+
+/**
+ * @summary safely get the entities value 
+ * @param entities
+ * @param key
+ * @return value
+ */
+export function safelyGetEntities(entities : Entities, key : string , defaultReturns : string = "") : string {
+  const arr = entities[key];
+  if(arr){
+    const [{value}] = arr;
+    return value
+  } else {
+    return defaultReturns;
+  }
 }

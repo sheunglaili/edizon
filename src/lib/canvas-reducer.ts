@@ -1,6 +1,6 @@
 import { AnalysedIntent, Entities } from "../state/nlp/selector";
 import { Instagram } from "./filter";
-import { applyFilters } from "./utils";
+import { applyFilters, safelyGetEntities } from "./utils";
 import {
   setBlurriness,
   increaseBlurriness,
@@ -26,7 +26,7 @@ interface ReducerMap {
 }
 
 function applyInstagramFilters(canvas: any, entities: Entities) {
-  const [{ value }] = entities["vedit_filter:vedit_filter"];
+  const value = safelyGetEntities(entities,"vedit_filter:vedit_filter");
   const filter = new Instagram({ filterName: value });
   applyFilters(canvas, filter);
 }
@@ -41,7 +41,7 @@ function downloadURI(uri: string, name: string) {
 }
 
 function exportImage(canvas: any, entities: Entities) {
-  const [{ value: extension }] = entities["file_format:format"];
+  const extension = safelyGetEntities(entities, "file_format:format", "png");
   const img = canvas.overlayImage;
   const url = img?.toDataURL({ format: extension });
   url && downloadURI(url, `image.${extension}`);
@@ -76,7 +76,7 @@ const rootReducer: ReducerMap = {
 export default function reducer(
   action: AnalysedIntent,
   { canvas }: Deps,
-  callback: () => void = () => {}
+  callback: () => void = () => { }
 ) {
   const { intent, entities } = action;
   const handler = rootReducer[intent];
