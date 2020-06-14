@@ -22,6 +22,7 @@
     "fabric": "^3.6.3",
     "hark": "^1.2.3",
     "ml5": "^0.5.0",
+    "notistack": "^0.9.17",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",

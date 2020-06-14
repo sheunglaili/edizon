@@ -10,9 +10,10 @@ import BumbleBeeProvider from "./lib/bumblebee-provider";
 import bumblebee from "./initBumblebee";
 import { RecoilRoot } from "recoil";
 import { fabric } from "fabric";
+import { SnackbarProvider } from "notistack";
 
 // use canvas 2d to edit photo as applying ml model
-fabric.filterBackend  = new fabric.Canvas2dFilterBackend();
+fabric.filterBackend = new fabric.Canvas2dFilterBackend();
 
 
 const theme = createMuiTheme({
@@ -32,9 +33,11 @@ ReactDOM.render(
   <React.StrictMode>
     <BumbleBeeProvider bumblebee={bumblebee}>
       <ThemeProvider theme={theme}>
-        <RecoilRoot>
-          <App />
-        </RecoilRoot>
+        <SnackbarProvider maxSnack={3}>
+          <RecoilRoot>
+            <App />
+          </RecoilRoot>
+        </SnackbarProvider>
       </ThemeProvider>
     </BumbleBeeProvider>
   </React.StrictMode>,

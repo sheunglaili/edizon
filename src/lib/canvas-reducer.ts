@@ -16,6 +16,7 @@ import { setContrast, increaseContrast, decreaseContrast } from "./contrast";
 import { grayscale } from "./grayscale";
 import { invert } from "./invert";
 import { pixelate } from "./pixelate";
+import { inceraseWarmness, decreaseWarmness, increaseColdness, decreaseColdness } from "./gamma";
 
 interface Deps {
   canvas: any;
@@ -66,6 +67,10 @@ const rootReducer: ReducerMap = {
   set_contrast: setContrast,
   increase_contrast: increaseContrast,
   decrease_contrast: decreaseContrast,
+  increase_warmness : inceraseWarmness,
+  decrease_warmness : decreaseWarmness,
+  increase_coldness : increaseColdness,
+  decrease_coldness : decreaseColdness ,
   grayscale: grayscale,
   invert: invert,
   pixelate: pixelate,
@@ -84,6 +89,7 @@ export default function reducer(
     const res = handler(canvas, entities);
     if (res && res instanceof Promise) {
       res.then(callback);
+      return;
     }
   }
   callback();

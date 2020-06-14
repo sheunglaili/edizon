@@ -41,7 +41,7 @@ export default function Analyser() {
   const [called, setCalled] = useState(false);
 
   const setSpeech = useSetRecoilState(userSpeechState);
-  const [{ state }, setIntent] = useRecoilStateLoadable(intentState);
+  const [ {state , contents} , setIntent] = useRecoilStateLoadable(intentState);
   const loading = useRecoilValue(processing);
 
   const onHotWord = useCallback(
@@ -87,8 +87,12 @@ export default function Analyser() {
     };
   }, [bumblebee, onHotWord]);
 
-  console.log(loading)
-  console.log(state)
+  useEffect(()=>{
+    if(state === "hasError"){
+      console.log("err occur",contents);
+    }
+  }, [state,contents])
+
 
   return loading || state === "loading" ? (
     <div className={styles.spinner}>

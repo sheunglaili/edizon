@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useSetRecoilState, useRecoilState } from "recoil";
-import { intentState } from "../state/nlp";
+import { useSetRecoilState, useRecoilState, useRecoilStateLoadable } from "recoil";
+import { intentState, AnalysedIntent } from "../state/nlp";
 import {
   Dialog,
   DialogTitle,
@@ -19,6 +19,7 @@ interface Parameter {
   default?: string;
   required: boolean;
   type?: "text" | "password" | "number";
+  select? : string[]
 }
 
 export interface Instruction {
@@ -43,7 +44,7 @@ const Transition = React.forwardRef<any, TransitionProps>(
 
 
 export default function HelpMenu() {
-  const [{ intent }, setIntent] = useRecoilState(intentState);
+  const [{ state , contents }, setIntent] = useRecoilStateLoadable(intentState);
   const [open, setOpen] = useState(false);
 
   const onClose = useCallback(() => {
@@ -60,9 +61,12 @@ export default function HelpMenu() {
   }, []);
 
   useEffect(() => {
-    const askingForHelp = intent === "ask_for_help"
-    setOpen(askingForHelp); 
-  }, [intent, open]);
+    if(state === "hasValue"){
+      const { intent } = contents as AnalysedIntent;
+      const askingForHelp = intent === "ask_for_help"
+      setOpen(askingForHelp); 
+    }
+  }, [state, contents, open]);
 
   return (
     <Dialog open={open} onClose={onClose} TransitionComponent={Transition}>

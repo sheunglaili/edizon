@@ -14,6 +14,8 @@ import {
   Input,
   Button,
   Grid,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -59,6 +61,7 @@ export default function HelpMenuItem({
       evt.preventDefault();
       const data = new FormData(evt.target);
       const parsed = Object.fromEntries(data);
+      console.log(parsed)
       const intent: AnalysedIntent = {
         intent: action,
         entities: {
@@ -90,11 +93,24 @@ export default function HelpMenuItem({
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           <form onSubmit={(evt) => dispatchIntentWithParam(evt, action)}>
-            {entities?.map(({ key, name, type, description, required }) => (
+            {entities?.map(({ key, name, type, description, required , select }) => (
               <ListItem key={key} className={styles.nested}>
                 <FormControl fullWidth variant="outlined">
-                  <InputLabel htmlFor={key}>{name}</InputLabel>
-                  <Input name={key} type={type} id={key} required={required} />
+                  <InputLabel id={`${key}-label`} htmlFor={key}>{name}</InputLabel>
+                  {select 
+                  ?  
+                    <Select
+                      variant="standard"
+                      labelId={`${key}-label`}
+                      id={key}
+                      name={key}
+                      defaultValue={""}
+                    >
+                      {select.map(option => 
+                        <MenuItem value={option}>{option}</MenuItem>
+                      )}
+                    </Select>
+                  :<Input name={key} type={type} id={key} required={required} />}
                   <FormHelperText variant="outlined" id={`${key}-text`}>
                     {description}
                   </FormHelperText>

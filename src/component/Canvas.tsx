@@ -109,30 +109,33 @@ export default function Canvas({ imgURL }: Props) {
     setLoading(false);
   }, [setLoading]);
 
-  const { state, contents } = loadable;
-  switch (state) {
-    case "hasValue":
-      const { current: canvas } = canvasRef;
-      if (canvas) {
-        const intented =
-          (contents as AnalysedIntent).intent &&
-          (contents as AnalysedIntent).intent !== "ask_for_help";
-        if (intented) {
-          setLoading(true);
-          reduce(contents as AnalysedIntent, { canvas }, () => {
-            onLoadingFinish();
-            setIntentState({
-              intent: "",
-              entities: {},
+  useEffect(() => {
+    const { state, contents } = loadable;
+    switch (state) {
+      case "hasValue":
+        const { current: canvas } = canvasRef;
+        if (canvas) {
+          const intented =
+            (contents as AnalysedIntent).intent &&
+            (contents as AnalysedIntent).intent !== "ask_for_help";
+          if (intented) {
+            console.log("intented")
+            setLoading(true);
+            reduce(contents as AnalysedIntent, { canvas }, () => {
+              console.log('finish loading')
+              onLoadingFinish();
+              setIntentState({
+                intent: "",
+                entities: {},
+              });
             });
-          });
+          }
         }
-
-      }
-      break;
-    default:
-      console.log(contents);
-  }
+        break;
+      default:
+        console.log(contents);
+    }
+  }, [loadable, onLoadingFinish, setIntentState, setLoading])
 
   return <canvas className={styles.canvas} id="c"></canvas>;
 }
