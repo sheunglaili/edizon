@@ -1,19 +1,24 @@
-FROM node:14-alpine3.12
+FROM node:14-alpine3.12 as builder
 
 # set working directory
-WORKDIR /app
+WORKDIR /home/app
 
 COPY . .
 
-RUN yarn global add pm2
-
 # install app dependencies
-ADD package.json yarn.lock ./
-RUN yarn --silent --ignore-optional --prod
+COPY package.json yarn.lock ./
+RUN yarn --silent --ignore-optional --prod 
 
+RUN yarn run build
+
+FROM node:14-alpine3.12 as prod
+
+WORKDIR /home/app
+COPY --from=builder /home/app/build ./
 EXPOSE 8080
 
-CMD ["pm2-runtime" , "start" , "ecosystem.config.js"]
+CMD ["npx","serve -p 8080 -s build"]
+
 
 
 
