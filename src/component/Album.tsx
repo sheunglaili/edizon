@@ -2,8 +2,9 @@ import React, { useCallback, useState, useEffect } from "react";
 import { Paper, makeStyles } from "@material-ui/core";
 import Canvas from "./Canvas";
 import Dropzone from "./Dropzone";
-import { useRecoilValueLoadable } from "recoil";
-import { nlpQuery, NLPResponse } from "src/state/nlp";
+import { useRecoilStateLoadable } from "recoil";
+import { intentState, AnalysedIntent } from "src/state/nlp";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -26,21 +27,19 @@ export default function Album() {
   const [uploaded, setUploaded] = useState(false);
   const [imgURL, setImgURL] = useState<string>();
 
-  const { state, contents } = useRecoilValueLoadable(nlpQuery);
+  const [{ state, contents }, setIntent] = useRecoilStateLoadable(intentState);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (state === "hasValue") {
-      const { intents } = contents as NLPResponse;
-      const intent = intents[0]?.name;
-
+      const { intent } = contents as AnalysedIntent;
       if (intent === "clear") {
         setUploaded(false);
         setImgURL("");
       }
-    } else if (state === "hasError") {
-      //handle error
-    }
-  }, [state, contents]);
+    } // error handled in analyser
+  }, [state, contents, enqueueSnackbar]);
 
   const validateExtensions = useCallback((fileName: string) => {
     const ext = fileName.split(".").pop()?.toLowerCase();
@@ -62,6 +61,10 @@ export default function Album() {
             const [file] = Array.from(files);
             const valid = validateExtensions(file.name);
             if (valid) {
+              setIntent({
+                intent: undefined,
+                entities: {},
+              });
               readImage(file);
               setUploaded(true);
             }

@@ -16,7 +16,7 @@ import { setContrast, increaseContrast, decreaseContrast } from "./contrast";
 import { grayscale } from "./grayscale";
 import { invert } from "./invert";
 import { pixelate } from "./pixelate";
-import { inceraseWarmness, decreaseWarmness, increaseColdness, decreaseColdness } from "./gamma";
+import { warmer , cooler  } from "./gamma";
 
 interface Deps {
   canvas: any;
@@ -67,10 +67,8 @@ const rootReducer: ReducerMap = {
   set_contrast: setContrast,
   increase_contrast: increaseContrast,
   decrease_contrast: decreaseContrast,
-  increase_warmness : inceraseWarmness,
-  decrease_warmness : decreaseWarmness,
-  increase_coldness : increaseColdness,
-  decrease_coldness : decreaseColdness ,
+  warmer : warmer,
+  cooler : cooler,
   grayscale: grayscale,
   invert: invert,
   pixelate: pixelate,
@@ -81,10 +79,10 @@ const rootReducer: ReducerMap = {
 export default function reducer(
   action: AnalysedIntent,
   { canvas }: Deps,
-  callback: () => void = () => { }
+  callback: () => void = () => { },
 ) {
   const { intent, entities } = action;
-  const handler = rootReducer[intent];
+  const handler = rootReducer[intent || ""];
   if (handler) {
     const res = handler(canvas, entities);
     if (res && res instanceof Promise) {

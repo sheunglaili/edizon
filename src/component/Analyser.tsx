@@ -12,8 +12,9 @@ import { userSpeechState, intentState } from "../state/nlp";
 import { Fab, Typography, Grid, makeStyles, Link } from "@material-ui/core";
 import { processing } from "src/state/canvas";
 import Spinner from "src/component/Spinner";
+import { useSnackbar } from "notistack";
 
-const useStyles = makeStyles((theme:any) => ({
+const useStyles = makeStyles((theme: any) => ({
   caption: {
     paddingTop: "1rem",
     maxWidth: "100%",
@@ -41,11 +42,12 @@ export default function Analyser() {
   const [called, setCalled] = useState(false);
 
   const setSpeech = useSetRecoilState(userSpeechState);
-  const [ {state , contents} , setIntent] = useRecoilStateLoadable(intentState);
+  const { enqueueSnackbar } = useSnackbar();
+  const [{ state, contents }, setIntent] = useRecoilStateLoadable(intentState);
   const loading = useRecoilValue(processing);
 
   const onHotWord = useCallback(
-    async (hotword : string | MouseEvent) => {
+    async (hotword: string | MouseEvent) => {
       setCalled(true);
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -62,7 +64,7 @@ export default function Analyser() {
         setCalled(false);
         // clear manual message if audio is input
         setIntent({
-          intent: "",
+          intent: undefined,
           entities: {},
         });
         // set recorded audio to trigger wit.ai
@@ -87,12 +89,23 @@ export default function Analyser() {
     };
   }, [bumblebee, onHotWord]);
 
-  useEffect(()=>{
-    if(state === "hasError"){
-      console.log("err occur",contents);
+  useEffect(() => {
+    if (state === "hasError") {
+      const { message } = contents as Error;
+      let toastBody: string;
+      switch (message) {
+        case "audio-too-long":
+          toastBody = "The recording is too long to process !";
+          break;
+        case "no-connection":
+          toastBody = "Oops , I cannot connect to my brains !";
+          break;
+        default:
+          toastBody = message;
+      }
+      enqueueSnackbar(toastBody);
     }
-  }, [state,contents])
-
+  }, [state, contents, enqueueSnackbar]);
 
   return loading || state === "loading" ? (
     <div className={styles.spinner}>
@@ -112,7 +125,7 @@ export default function Analyser() {
         direction="column"
       >
         <Typography variant="caption">
-          Say <span className={styles.bold}>Bumblebee</span> then
+          Say <span className={styles.bold}>Hey Edison</span> then
           <span className={styles.bold}> What can I do </span>
         </Typography>
         <Typography variant="caption">or</Typography>

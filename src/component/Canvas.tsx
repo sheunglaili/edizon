@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import { fabric } from "fabric";
 import { makeStyles, Theme } from "@material-ui/core";
-import { useRecoilStateLoadable, useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilStateLoadable, useSetRecoilState } from "recoil";
 import { AnalysedIntent, intentState } from "../state/nlp/selector";
 import reduce from "../lib/canvas-reducer";
 import { processing } from "../state/canvas";
+import { useSnackbar } from "notistack";
 
 interface Props {
   imgURL: string;
@@ -85,25 +86,14 @@ export default function Canvas({ imgURL }: Props) {
 
         oImg.scaleToHeight(newHeight);
         oImg.scaleToWidth(newWidth);
-        canvas.setOverlayImage(oImg, () => { });
+        canvas.setOverlayImage(oImg, () => {});
       }
     });
   }, [imgURL, styles, resize]);
 
-  const applyFilters = useCallback((filter: any) => {
-    console.log("applying filter ", filter);
-    const { current: canvas } = canvasRef;
-    if (canvas) {
-      const img = canvas.overlayImage;
-      img?.filters?.push(filter);
-      img?.applyFilters();
-      canvas.renderAll();
-    }
-  }, []);
+  const { enqueueSnackbar } = useSnackbar();
 
-  const [loadable, setIntentState] = useRecoilStateLoadable(
-    intentState
-  );
+  const [loadable, setIntentState] = useRecoilStateLoadable(intentState);
 
   const onLoadingFinish = useCallback(() => {
     setLoading(false);
@@ -115,17 +105,17 @@ export default function Canvas({ imgURL }: Props) {
       case "hasValue":
         const { current: canvas } = canvasRef;
         if (canvas) {
-          const intented =
-            (contents as AnalysedIntent).intent &&
-            (contents as AnalysedIntent).intent !== "ask_for_help";
+          const analysedIntent = contents as AnalysedIntent;
+          const { intent } = analysedIntent;
+          const intented = intent && intent !== "ask_for_help";
           if (intented) {
-            console.log("intented")
+            console.log("intented");
             setLoading(true);
-            reduce(contents as AnalysedIntent, { canvas }, () => {
-              console.log('finish loading')
+            reduce(analysedIntent, { canvas }, () => {
+              console.log("finish loading");
               onLoadingFinish();
               setIntentState({
-                intent: "",
+                intent: undefined,
                 entities: {},
               });
             });
@@ -135,7 +125,7 @@ export default function Canvas({ imgURL }: Props) {
       default:
         console.log(contents);
     }
-  }, [loadable, onLoadingFinish, setIntentState, setLoading])
+  }, [loadable, onLoadingFinish, setIntentState, setLoading, enqueueSnackbar]);
 
   return <canvas className={styles.canvas} id="c"></canvas>;
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useSetRecoilState, useRecoilState, useRecoilStateLoadable } from "recoil";
+import { useRecoilStateLoadable } from "recoil";
 import { intentState, AnalysedIntent } from "../state/nlp";
 import {
   Dialog,
@@ -7,10 +7,12 @@ import {
   DialogContent,
   Slide,
   List,
+  Typography,
 } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import HelpMenuItem from "./HelpMenuItem";
-import instructions from '../help-menu'
+import instructions from "../help-menu";
+import { useSnackbar } from "notistack";
 
 interface Parameter {
   name: string;
@@ -19,7 +21,7 @@ interface Parameter {
   default?: string;
   required: boolean;
   type?: "text" | "password" | "number";
-  select? : string[]
+  select?: string[];
 }
 
 export interface Instruction {
@@ -42,15 +44,14 @@ const Transition = React.forwardRef<any, TransitionProps>(
   }
 );
 
-
 export default function HelpMenu() {
-  const [{ state , contents }, setIntent] = useRecoilStateLoadable(intentState);
+  const [{ state, contents }, setIntent] = useRecoilStateLoadable(intentState);
   const [open, setOpen] = useState(false);
 
   const onClose = useCallback(() => {
     setOpen(false);
     setIntent({
-      intent: "",
+      intent: undefined,
       entities: {},
     });
   }, [setIntent]);
@@ -60,17 +61,27 @@ export default function HelpMenu() {
     console.log("close");
   }, []);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   useEffect(() => {
-    if(state === "hasValue"){
+    if (state === "hasValue") {
       const { intent } = contents as AnalysedIntent;
-      const askingForHelp = intent === "ask_for_help"
-      setOpen(askingForHelp); 
+      const askingForHelp = intent === "ask_for_help";
+      setOpen(askingForHelp);
     }
-  }, [state, contents, open]);
+  }, [state, contents, open, enqueueSnackbar, setIntent]);
 
   return (
     <Dialog open={open} onClose={onClose} TransitionComponent={Transition}>
-      <DialogTitle>What can you do ?</DialogTitle>
+      <DialogTitle>
+        What can you do ?{" "}
+        {
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            Say "Hey Edison" then with the following instruction
+          </Typography>
+        }
+      </DialogTitle>
       <DialogContent>
         <List>
           {instructions.map(({ primary, secondary, action, entities }) => (

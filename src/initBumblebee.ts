@@ -4,9 +4,9 @@ const bumblebee = new BumbleBee();
 
 bumblebee.setWorkersPath(`./bumblebee-workers`)
 // add hotword to bumblebee
-bumblebee.addHotword('bumblebee');
+bumblebee.addHotword('hey_edison');
 // set the hotword to 'bumblebee'
-bumblebee.setHotword('bumblebee');
+bumblebee.setHotword('hey_edison');
 
 console.debug('initializing bumblebee');
 

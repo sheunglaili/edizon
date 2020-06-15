@@ -15,7 +15,7 @@ export const nlpState = atom<NLPResponse>({
   key: KEY.USER_MESSAGE,
   default: {
     text: "",
-    intents: [],
+    intents: undefined,
     entities: {},
   },
 });

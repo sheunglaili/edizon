@@ -28,7 +28,11 @@
     "react-scripts": "3.4.1",
     "recoil": "^0.0.8",
     "recorder-js": "^1.0.7",
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.3",
+    "@types/bumblebee-hotword": "^0.0.0",
+    "@types/hark": "^1.2.0",
+    "@types/recoil": "^0.0.0",
+    "@types/recorder-js": "^1.0.1"
   },
   "scripts": {
     "start:server": "node server.js",
@@ -51,11 +55,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/bumblebee-hotword": "^0.0.0",
-    "@types/hark": "^1.2.0",
-    "@types/recoil": "^0.0.0",
-    "@types/recorder-js": "^1.0.1"
   }
 }

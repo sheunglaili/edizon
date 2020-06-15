@@ -62,7 +62,7 @@ export async function blurBackground(canvas: any, entities: Entities) {
     .getContext("2d")
     ?.getImageData(0, 0, canvasEl.width, canvasEl.height);
 
-  const { segment, raw } = await model.segment(imageData);
+  const { raw } = await model.segment(imageData);
 
   const c = document.createElement("canvas");
   c.width = canvasEl.width;

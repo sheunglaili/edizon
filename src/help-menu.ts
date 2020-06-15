@@ -29,7 +29,7 @@ export default [
       },
     ],
   },
-  
+
   {
     primary: "Apply Filter 'name'",
     secondary: "Apply the filter to canvas",
@@ -40,7 +40,7 @@ export default [
         key: "vedit_filter:vedit_filter",
         description: "The filter name you wanna apply to the canvas",
         required: true,
-        select : [
+        select: [
           "lark",
           "reyes",
           "juno",
@@ -66,8 +66,8 @@ export default [
           "toaster",
           "walden",
           "1977",
-          "kelvin"
-        ]
+          "kelvin",
+        ],
       },
     ],
   },
@@ -212,9 +212,9 @@ export default [
     ],
   },
   {
-    primary: "increase warmness by six",
-    secondary: "Increase warmer of photo by value you ask for",
-    action: "increase_warmness",
+    primary: "warmer by six",
+    secondary: "Increase warmness of photo by value you ask for",
+    action: "warmer",
     entities: [
       {
         name: "Percentage",
@@ -226,46 +226,20 @@ export default [
     ],
   },
   {
-    primary: "decrease warmness by six",
-    secondary: "Increase warmer of photo by value you ask for",
-    action: "decrease_warmness",
-    entities: [
-      {
-        name: "Percentage",
-        key: "wit$number:number",
-        description: "The percentage you want to decrease",
-        type: "number",
-        required: true,
-      },
-    ],
-  },  {
-    primary: "Increase coldness by seven",
-    secondary: "Increase warmer of photo by value you ask for",
-    action: "increase_coldness",
-    entities: [
-      {
-        name: "Percentage",
-        key: "wit$number:number",
-        description: "The percentage you want to increase",
-        type: "number",
-        required: true,
-      },
-    ],
-  },
-  {
-    primary: "Decrease coldness by eight",
+    primary: "Cooler by seven",
     secondary: "Increase coldness of photo by value you ask for",
-    action: "decrease_coldness",
+    action: "cooler",
     entities: [
       {
         name: "Percentage",
         key: "wit$number:number",
-        description: "The percentage you want to decrease",
+        description: "The percentage you want to increase",
         type: "number",
         required: true,
       },
     ],
   },
+
   {
     primary: "Reset filter",
     secondary: "clear all filters applied to image",
@@ -282,7 +256,7 @@ export default [
         description: "File format that your image export to",
         default: "png",
         required: false,
-        select: ["png" , "jpeg"]
+        select: ["png", "jpeg"],
       },
     ],
   },

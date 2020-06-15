@@ -28,12 +28,13 @@ export interface Entities {
 }
 export interface NLPResponse {
   text: string;
-  intents: Intent[];
+  intents?: Intent[];
   entities: Entities;
 }
 
 export interface AnalysedIntent {
-  intent: string;
+  text?: string;
+  intent?: string;
   entities: Entities;
 }
 
@@ -47,27 +48,37 @@ export const nlpQuery = selector<NLPResponse>({
   get: async ({ get }) => {
     const processed = get(nlpState);
     const userSpeech = get(userSpeechState);
-    if (processed.intents[0]) {
+    if (processed.intents && processed.intents[0]) {
       return processed;
     } else if (userSpeech) {
-      const { data } = await recognise(userSpeech);
-      return {
-        intents: [],
-        ...data,
-      };
+      try {
+        const { data } = await recognise(userSpeech);
+        return {
+          intents: [],
+          ...data,
+        };
+      } catch (error) {
+        const { code } = error.response.data;
+        if (code) {
+          throw new Error(code);
+        } else {
+          throw new Error("no-connection");
+        }
+      }
     } else {
-      return { intents: [] };
+      return {};
     }
-  }
+  },
 });
 
 export const intentState = selector<AnalysedIntent>({
   key: KEY.INTENT,
   get: ({ get }) => {
-    const data = get(nlpQuery);
+    const { text, intents, entities } = get(nlpQuery);
     return {
-      intent: data.intents[0]?.name || "",
-      entities: data.entities,
+      text,
+      intent: intents ? (intents.length > 0 ? intents[0].name : "") : undefined,
+      entities,
     };
   },
   set: ({ set }, newValue) => {
@@ -81,9 +92,9 @@ export const intentState = selector<AnalysedIntent>({
               confidence: 1,
             },
           ]
-        : [],
+        : undefined,
       entities: entities,
     });
-    set(userSpeechState,undefined)
+    set(userSpeechState, undefined);
   },
 });
