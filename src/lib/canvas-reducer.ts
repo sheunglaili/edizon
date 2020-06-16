@@ -78,17 +78,18 @@ const rootReducer: ReducerMap = {
 
 export default function reducer(
   action: AnalysedIntent,
-  { canvas }: Deps,
-  callback: () => void = () => {}
+  deps: Deps,
+  callback: (deps: Deps) => void = () => {}
 ) {
+  const { canvas } = deps;
   const { intent, entities } = action;
   const handler = rootReducer[intent || ""];
   if (handler) {
     const res = handler(canvas, entities);
     if (res && res instanceof Promise) {
-      res.then(callback);
+      res.then(() => callback(deps));
       return;
     }
   }
-  callback();
+  callback(deps);
 }

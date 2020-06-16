@@ -1,3 +1,5 @@
 build:
   docker:
     web: Dockerfile.web
+  config:
+    REACT_APP_PROXY_SERVER: https://edizon-api.herokuapp.com

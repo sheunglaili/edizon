@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
-  paper: {
+  paper: { 
     background: theme.palette.secondary.main,
     color: theme.palette.primary.contrastText,
     width: "500px",
@@ -49,7 +49,7 @@ function App() {
         alignContent="center"
         className={styles.container}
       >
-        <Grid container item md={3} sm={2} xs={1}></Grid>
+        <Grid container item md={3} sm={2} xs={undefined}></Grid>
         <Grid
           style={{ height: "100%" }}
           justify="center"
@@ -81,7 +81,7 @@ function App() {
             <HelpMenu />
           </React.Suspense>
         </Grid>
-        <Grid container item md={3} sm={2} xs={1}></Grid>
+        <Grid container item md={3} sm={2} xs={12}></Grid>
         {/* <Grid container justify="center" alignContent="center" item xs={9}>
           <Album />
         </Grid>
