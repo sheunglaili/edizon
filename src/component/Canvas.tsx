@@ -5,6 +5,7 @@ import { useRecoilStateLoadable, useSetRecoilState } from "recoil";
 import { AnalysedIntent, intentState } from "../state/nlp/selector";
 import reduce from "../lib/canvas-reducer";
 import { processing } from "../state/canvas";
+import ColorThief from "colorthief";
 
 interface Props {
   imgURL: string;
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function Canvas({ imgURL }: Props) {
   //   console.log(imgURL)
   const canvasRef = useRef<any>();
+  const thiefRef = useRef<ColorThief>(new ColorThief());
 
   const styles = useStyles();
   const setLoading = useSetRecoilState(processing);
@@ -108,13 +110,19 @@ export default function Canvas({ imgURL }: Props) {
           if (intented) {
             console.log("intented");
             setLoading(true);
-            reduce(analysedIntent, { canvas }, () => {
+            reduce(analysedIntent, { canvas }, ({ canvas }) => {
               console.log("finish loading");
               onLoadingFinish();
               setIntentState({
                 intent: undefined,
                 entities: {},
               });
+              const { current: thief } = thiefRef;
+              const canvasElement = canvas.toCanvasElement();
+              const color = thief.getColor(canvasElement);
+              const palette = thief.getPalette(canvasElement);
+              console.log(color);
+              console.log(palette);
             });
           }
         }
