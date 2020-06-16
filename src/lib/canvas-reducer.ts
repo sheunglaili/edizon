@@ -16,7 +16,7 @@ import { setContrast, increaseContrast, decreaseContrast } from "./contrast";
 import { grayscale } from "./grayscale";
 import { invert } from "./invert";
 import { pixelate } from "./pixelate";
-import { warmer , cooler  } from "./gamma";
+import { warmer, cooler } from "./gamma";
 
 interface Deps {
   canvas: any;
@@ -27,7 +27,7 @@ interface ReducerMap {
 }
 
 function applyInstagramFilters(canvas: any, entities: Entities) {
-  const value = safelyGetEntities(entities,"vedit_filter:vedit_filter");
+  const value = safelyGetEntities(entities, "vedit_filter:vedit_filter");
   const filter = new Instagram({ filterName: value });
   applyFilters(canvas, filter);
 }
@@ -44,7 +44,7 @@ function downloadURI(uri: string, name: string) {
 function exportImage(canvas: any, entities: Entities) {
   const extension = safelyGetEntities(entities, "file_format:format", "png");
   const img = canvas.overlayImage;
-  const url = img?.toDataURL({ format: extension });
+  const url = img?.toDataURL({ format: extension, enableRetinaScaling: true });
   url && downloadURI(url, `image.${extension}`);
 }
 
@@ -67,8 +67,8 @@ const rootReducer: ReducerMap = {
   set_contrast: setContrast,
   increase_contrast: increaseContrast,
   decrease_contrast: decreaseContrast,
-  warmer : warmer,
-  cooler : cooler,
+  warmer: warmer,
+  cooler: cooler,
   grayscale: grayscale,
   invert: invert,
   pixelate: pixelate,
@@ -79,7 +79,7 @@ const rootReducer: ReducerMap = {
 export default function reducer(
   action: AnalysedIntent,
   { canvas }: Deps,
-  callback: () => void = () => { },
+  callback: () => void = () => {}
 ) {
   const { intent, entities } = action;
   const handler = rootReducer[intent || ""];

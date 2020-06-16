@@ -91,8 +91,6 @@ export default function Canvas({ imgURL }: Props) {
     });
   }, [imgURL, styles, resize]);
 
-  const { enqueueSnackbar } = useSnackbar();
-
   const [loadable, setIntentState] = useRecoilStateLoadable(intentState);
 
   const onLoadingFinish = useCallback(() => {
@@ -125,7 +123,7 @@ export default function Canvas({ imgURL }: Props) {
       default:
         console.log(contents);
     }
-  }, [loadable, onLoadingFinish, setIntentState, setLoading, enqueueSnackbar]);
+  }, [loadable, onLoadingFinish, setIntentState, setLoading]);
 
   return <canvas className={styles.canvas} id="c"></canvas>;
 }

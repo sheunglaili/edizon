@@ -61,15 +61,13 @@ export default function HelpMenu() {
     console.log("close");
   }, []);
 
-  const { enqueueSnackbar } = useSnackbar();
-
   useEffect(() => {
     if (state === "hasValue") {
       const { intent } = contents as AnalysedIntent;
       const askingForHelp = intent === "ask_for_help";
       setOpen(askingForHelp);
     }
-  }, [state, contents, open, enqueueSnackbar, setIntent]);
+  }, [state, contents, open, setIntent]);
 
   return (
     <Dialog open={open} onClose={onClose} TransitionComponent={Transition}>

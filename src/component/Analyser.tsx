@@ -52,6 +52,8 @@ export default function Analyser() {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
+      let AudioContext =
+        window.AudioContext || (window as any).webkitAudioContext;
       const ctx = new AudioContext();
       const source = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
@@ -89,23 +91,7 @@ export default function Analyser() {
     };
   }, [bumblebee, onHotWord]);
 
-  useEffect(() => {
-    if (state === "hasError") {
-      const { message } = contents as Error;
-      let toastBody: string;
-      switch (message) {
-        case "audio-too-long":
-          toastBody = "The recording is too long to process !";
-          break;
-        case "no-connection":
-          toastBody = "Oops , I cannot connect to my brains !";
-          break;
-        default:
-          toastBody = message;
-      }
-      enqueueSnackbar(toastBody);
-    }
-  }, [state, contents, enqueueSnackbar]);
+ 
 
   return loading || state === "loading" ? (
     <div className={styles.spinner}>

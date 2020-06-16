@@ -5,6 +5,7 @@ import { userSpeechState, nlpState } from "./atom";
 const KEY = {
   NLP_QUERY: "NLP_QUERY",
   INTENT: "INTENT",
+  ERROR: "ERROR",
 };
 
 export interface Intent {
@@ -75,6 +76,9 @@ export const intentState = selector<AnalysedIntent>({
   key: KEY.INTENT,
   get: ({ get }) => {
     const { text, intents, entities } = get(nlpQuery);
+    // intented clear = undefined
+    // unknown intent = ""
+    // known intent = "intent"
     return {
       text,
       intent: intents ? (intents.length > 0 ? intents[0].name : "") : undefined,
@@ -96,5 +100,19 @@ export const intentState = selector<AnalysedIntent>({
       entities: entities,
     });
     set(userSpeechState, undefined);
+  },
+});
+
+export const errorState = selector<Error | undefined>({
+  key: KEY.ERROR,
+  get: async ({ get }) => {
+    try {
+      const { intent } = get(intentState);
+      if (intent === "") {
+        return new Error('unknown_intent')
+      }
+    } catch (error) {
+      return error;
+    }
   },
 });

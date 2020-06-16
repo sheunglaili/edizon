@@ -5,6 +5,7 @@ import Paper from "@material-ui/core/Paper";
 import Album from "./component/Album";
 import Analyser from "./component/Analyser";
 import HelpMenu from "./component/HelpMenu";
+import ErrorToast from "./component/ErrorToast";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -26,9 +27,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     height: "100%",
   },
-  item: {
-    flexBasis: "25%",
-  },
   spectrumPaper: {
     background: theme.palette.secondary.main,
     color: theme.palette.primary.contrastText,
@@ -45,13 +43,46 @@ function App() {
       <CssBaseline />
       <Grid
         container
-        direction="column"
+        direction="row"
         justify="center"
         alignItems="center"
         alignContent="center"
         className={styles.container}
       >
-        <Grid container justify="center" alignContent="center" item xs={9}>
+        <Grid container item md={3} sm={2} xs={1}></Grid>
+        <Grid
+          style={{ height: "100%" }}
+          justify="center"
+          direction="column"
+          alignContent="center"
+          alignItems="center"
+          container
+          item
+          md={6}
+          sm={8}
+          xs={10}
+        >
+          <Grid container justify="center" alignContent="center" item xs>
+            <Album />
+          </Grid>
+          <Grid
+            style={{ maxWidth: "100%" }}
+            container
+            justify="center"
+            alignContent="center"
+            item
+            xs={3}
+          >
+            <Paper className={styles.spectrumPaper}>
+              <Analyser />
+            </Paper>
+          </Grid>
+          <React.Suspense fallback={<></>}>
+            <HelpMenu />
+          </React.Suspense>
+        </Grid>
+        <Grid container item md={3} sm={2} xs={1}></Grid>
+        {/* <Grid container justify="center" alignContent="center" item xs={9}>
           <Album />
         </Grid>
         <Grid className={styles.item} item>
@@ -61,8 +92,11 @@ function App() {
         </Grid>
         <React.Suspense fallback={<></>}>
           <HelpMenu />
-        </React.Suspense>
+        </React.Suspense> */}
       </Grid>
+      <React.Suspense fallback={<></>}>
+        <ErrorToast />
+      </React.Suspense>
     </>
   );
 }

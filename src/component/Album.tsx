@@ -4,7 +4,6 @@ import Canvas from "./Canvas";
 import Dropzone from "./Dropzone";
 import { useRecoilStateLoadable } from "recoil";
 import { intentState, AnalysedIntent } from "src/state/nlp";
-import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -29,7 +28,6 @@ export default function Album() {
 
   const [{ state, contents }, setIntent] = useRecoilStateLoadable(intentState);
 
-  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (state === "hasValue") {
@@ -39,7 +37,7 @@ export default function Album() {
         setImgURL("");
       }
     } // error handled in analyser
-  }, [state, contents, enqueueSnackbar]);
+  }, [state, contents]);
 
   const validateExtensions = useCallback((fileName: string) => {
     const ext = fileName.split(".").pop()?.toLowerCase();
