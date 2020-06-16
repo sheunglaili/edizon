@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
-import { errorState } from "../state/nlp/selector";
+import { errorState, UnknownIntentError } from "../state/nlp/selector";
 
 export default function ErrorToast() {
   const { enqueueSnackbar } = useSnackbar();
@@ -19,7 +19,9 @@ export default function ErrorToast() {
           toastBody = "Oops , I cannot connect to my brains !";
           break;
         case "unknown_intent":
-          toastBody = "Sorry , But I couldn't understand you..";
+          toastBody = `Sorry , But I couldn't understand "${
+            (error as UnknownIntentError).text
+          }"`;
           break;
         default:
           toastBody = message;

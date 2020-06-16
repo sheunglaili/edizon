@@ -44,6 +44,14 @@ export interface NLPResponseSetterObject {
   entitits: Entities;
 }
 
+export class UnknownIntentError extends Error {
+  text?: String;
+  constructor(message: string, text?: string) {
+    super(message);
+    this.text = text;
+  }
+}
+
 export const nlpQuery = selector<NLPResponse>({
   key: KEY.NLP_QUERY,
   get: async ({ get }) => {
@@ -107,9 +115,9 @@ export const errorState = selector<Error | undefined>({
   key: KEY.ERROR,
   get: async ({ get }) => {
     try {
-      const { intent } = get(intentState);
+      const { text, intent } = get(intentState);
       if (intent === "") {
-        return new Error('unknown_intent')
+        return new UnknownIntentError("unknown_intent", text);
       }
     } catch (error) {
       return error;
