@@ -12,7 +12,6 @@ import { userSpeechState, intentState } from "../state/nlp";
 import { Fab, Typography, Grid, makeStyles, Link } from "@material-ui/core";
 import { processing } from "src/state/canvas";
 import Spinner from "src/component/Spinner";
-import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme: any) => ({
   caption: {
@@ -42,8 +41,7 @@ export default function Analyser() {
   const [called, setCalled] = useState(false);
 
   const setSpeech = useSetRecoilState(userSpeechState);
-  const { enqueueSnackbar } = useSnackbar();
-  const [{ state, contents }, setIntent] = useRecoilStateLoadable(intentState);
+  const [{ state }, setIntent] = useRecoilStateLoadable(intentState);
   const loading = useRecoilValue(processing);
 
   const onHotWord = useCallback(

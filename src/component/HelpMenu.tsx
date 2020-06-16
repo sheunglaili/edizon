@@ -12,7 +12,6 @@ import {
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import HelpMenuItem from "./HelpMenuItem";
 import instructions from "../help-menu";
-import { useSnackbar } from "notistack";
 
 interface Parameter {
   name: string;

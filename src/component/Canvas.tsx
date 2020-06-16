@@ -5,7 +5,6 @@ import { useRecoilStateLoadable, useSetRecoilState } from "recoil";
 import { AnalysedIntent, intentState } from "../state/nlp/selector";
 import reduce from "../lib/canvas-reducer";
 import { processing } from "../state/canvas";
-import { useSnackbar } from "notistack";
 
 interface Props {
   imgURL: string;
