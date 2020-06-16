@@ -1,0 +1,29 @@
+FROM node:14-alpine3.12 as builder
+
+# set working directory
+WORKDIR /home/app
+
+# copy everything including package.json and yarn.lock
+COPY . .
+
+COPY package.json .
+COPY yarn.lock .
+RUN yarn --frozen-lockfile --no-cache --production
+RUN yarn run build
+
+
+FROM node:14-alpine3.12 as prod
+
+
+WORKDIR /home/app
+COPY --from=builder /home/app/build ./
+
+ENV NODE_ENV=production
+
+RUN yarn global add serve
+# heroku require port to be specify on run time.
+CMD serve -l $PORT
+
+
+
+
