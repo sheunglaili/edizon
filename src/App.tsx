@@ -6,15 +6,19 @@ import Album from "./component/Album";
 import Analyser from "./component/Analyser";
 import HelpMenu from "./component/HelpMenu";
 import ErrorToast from "./component/ErrorToast";
+import Palette from "./component/Palette";
 
 const useStyles = makeStyles((theme) => ({
   container: {
     height: "100vh",
+    [theme.breakpoints.down("xs")]: {
+      height: "100%",
+    },
     flexGrow: 1,
     background: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
-  paper: { 
+  paper: {
     background: theme.palette.secondary.main,
     color: theme.palette.primary.contrastText,
     width: "500px",
@@ -51,7 +55,7 @@ function App() {
       >
         <Grid container item md={3} sm={2} xs={undefined}></Grid>
         <Grid
-          style={{ height: "100%" }}
+          style={{ height: "100vh" }}
           justify="center"
           direction="column"
           alignContent="center"
@@ -81,7 +85,9 @@ function App() {
             <HelpMenu />
           </React.Suspense>
         </Grid>
-        <Grid container item md={3} sm={2} xs={12}></Grid>
+        <Grid container item md={3} sm={2} xs={12}>
+          <Palette />
+        </Grid>
         {/* <Grid container justify="center" alignContent="center" item xs={9}>
           <Album />
         </Grid>

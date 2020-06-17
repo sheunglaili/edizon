@@ -76,20 +76,31 @@ const rootReducer: ReducerMap = {
   export_image: exportImage,
 };
 
-export default function reducer(
+interface ReducerOptions {
+  onComplete: (deps: Deps) => void;
+  onError: (deps: Deps, err: Error) => void;
+}
+
+export default async function reducer(
   action: AnalysedIntent,
   deps: Deps,
-  callback: (deps: Deps) => void = () => {}
+  options?: ReducerOptions
 ) {
+  const { onComplete = () => {}, onError = () => {} } = options || {};
   const { canvas } = deps;
   const { intent, entities } = action;
   const handler = rootReducer[intent || ""];
   if (handler) {
-    const res = handler(canvas, entities);
-    if (res && res instanceof Promise) {
-      res.then(() => callback(deps));
-      return;
+    try {
+      const res = handler(canvas, entities);
+      if (res && res instanceof Promise) {
+        await res;
+        onComplete(deps);
+        return;
+      }
+    } catch (error) {
+      onError(deps, error);
     }
   }
-  callback(deps);
+  onComplete(deps);
 }

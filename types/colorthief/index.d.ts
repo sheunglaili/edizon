@@ -10,7 +10,7 @@ declare module "colorthief" {
       image: HTMLCanvasElement | HTMLImageElement,
       colorCount?: number,
       quality?: number
-    ): [number, number, number];
+    ): [number, number, number][];
 
     getColor(
       image: HTMLCanvasElement | HTMLImageElement,

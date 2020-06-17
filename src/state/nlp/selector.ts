@@ -1,4 +1,4 @@
-import { selector } from "recoil";
+import { selector , atom } from "recoil";
 import { recognise } from "./request";
 import { userSpeechState, nlpState } from "./atom";
 
@@ -6,6 +6,7 @@ const KEY = {
   NLP_QUERY: "NLP_QUERY",
   INTENT: "INTENT",
   ERROR: "ERROR",
+  USER_ERROR: "USER_ERROR",
 };
 
 export interface Intent {
@@ -123,4 +124,9 @@ export const errorState = selector<Error | undefined>({
       return error;
     }
   },
+});
+
+export const errorAtom = atom<Error | undefined>({
+  key: KEY.USER_ERROR,
+  default: errorState,
 });

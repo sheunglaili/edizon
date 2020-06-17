@@ -91,6 +91,8 @@ export default function Analyser() {
 
  
 
+ 
+
   return loading || state === "loading" ? (
     <div className={styles.spinner}>
       <Spinner />

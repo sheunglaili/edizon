@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { NLPResponse } from "./selector";
+import { NLPResponse, errorState } from "./selector";
 
 const KEY = {
   USER_SPEECH: "USER_SPEECH",
@@ -19,3 +19,5 @@ export const nlpState = atom<NLPResponse>({
     entities: {},
   },
 });
+
+

@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
-import { errorState, UnknownIntentError } from "../state/nlp/selector";
+import { UnknownIntentError } from "../state/nlp/selector";
+import { errorAtom } from "src/state/nlp";
 
 export default function ErrorToast() {
   const { enqueueSnackbar } = useSnackbar();
-  const error = useRecoilValue(errorState);
+  const error = useRecoilValue(errorAtom);
 
   useEffect(() => {
     if (error) {

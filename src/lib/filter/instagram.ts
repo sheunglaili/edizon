@@ -717,7 +717,7 @@ const InstagramFilter = fabric.util.createClass(
         return newPix;
       } else {
         console.debug("filter not found", this.filterName);
-        return pix;
+        throw new Error(`We cannot find filter with name "${this.fileterName}" :()`)
       }
     },
   }
