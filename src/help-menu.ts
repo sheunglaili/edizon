@@ -239,7 +239,11 @@ export default [
       },
     ],
   },
-
+  {
+    primary: "Undo last filter",
+    secondary: "undo the last filter you've apply",
+    action: "undo",
+  },
   {
     primary: "Reset filter",
     secondary: "clear all filters applied to image",

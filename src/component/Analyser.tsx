@@ -274,15 +274,15 @@ export default function Analyser() {
     [onHotWord, setIntent, styles]
   );
 
-  if (!initialized)
-    return <NonRecordingState allowRecording={isAllowedRecord} />;
-
   if (loading || state === "loading")
     return (
       <div className={styles.spinner}>
         <Spinner />
       </div>
     );
+
+  if (!initialized)
+    return <NonRecordingState allowRecording={isAllowedRecord} />;
 
   if (called) return <Spectrum analyserNode={analyserNode} />;
 

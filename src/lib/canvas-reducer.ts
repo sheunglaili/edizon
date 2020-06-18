@@ -17,6 +17,7 @@ import { grayscale } from "./grayscale";
 import { invert } from "./invert";
 import { pixelate } from "./pixelate";
 import { warmer, cooler } from "./gamma";
+import { fabric } from "fabric";
 
 interface Deps {
   canvas: any;
@@ -55,6 +56,12 @@ function resetFilters(canvas: any, entities: Entities) {
   applyFilters(canvas);
 }
 
+function undo(canvas: any, entities: Entities) {
+  const img = canvas.overlayImage;
+  fabric.util.removeFromArray(img.filters, img.filters[img.filters.length - 1]);
+  applyFilters(canvas);
+}
+
 const rootReducer: ReducerMap = {
   apply_filter: applyInstagramFilters,
   set_blurriness: setBlurriness,
@@ -72,6 +79,7 @@ const rootReducer: ReducerMap = {
   grayscale: grayscale,
   invert: invert,
   pixelate: pixelate,
+  undo: undo,
   reset_filters: resetFilters,
   export_image: exportImage,
 };

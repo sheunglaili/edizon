@@ -41,6 +41,7 @@ export function applyFilters(canvas: any, filter?: any) {
     locateAndRemoveFilters(canvas, filter.type);
     img?.filters?.push(filter);
   }
+  console.log(img.filters)
   img?.applyFilters();
   canvas.renderAll();
 }
