@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect, MouseEvent } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  MouseEvent,
+  useRef,
+} from "react";
 import Spectrum from "./Spectrum";
 import { useBumbleBee } from "../lib/bumblebee-provider";
 import MicIcon from "@material-ui/icons/Mic";
@@ -26,7 +32,7 @@ const useStyles = makeStyles((theme: any) => ({
   button: {
     color: theme.palette.primary.contrastText,
     textTransform: "none",
-    fontWeight : theme.typography.fontWeightBold
+    fontWeight: theme.typography.fontWeightBold,
   },
   spinner: {
     width: "100%",
@@ -49,15 +55,19 @@ export default function Analyser() {
   const [{ state }, setIntent] = useRecoilStateLoadable(intentState);
   const loading = useRecoilValue(processing);
 
+  const getContext = useCallback(() => {
+    let AudioContext =
+      window.AudioContext || (window as any).webkitAudioContext;
+    return new AudioContext();
+  }, []);
+
   const InitAudioRecorder = useCallback<
     () => Promise<[AnalyserNode, AudioRecorder, hark.Harker]>
   >(async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
     });
-    let AudioContext =
-      window.AudioContext || (window as any).webkitAudioContext;
-    const ctx = new AudioContext();
+    const ctx = getContext();
     const source = ctx.createMediaStreamSource(stream);
     const analyser = ctx.createAnalyser();
     source.connect(analyser);
@@ -66,11 +76,36 @@ export default function Analyser() {
     recorder.init(stream);
 
     const speechEvent = hark(stream, {
-      interval: 50,
+      interval: 10,
       threshold: 0,
     });
     return [analyser, recorder, speechEvent];
-  }, []);
+  }, [getContext]);
+
+  const speakingTime = useRef<number>(0);
+
+  const sliceBuffer = useCallback(
+    (
+      audioBuffer: AudioBuffer,
+      start: number = 0,
+      end: number = audioBuffer.length
+    ) => {
+      const ctx = getContext();
+      const newBuffer = ctx.createBuffer(
+        audioBuffer.numberOfChannels,
+        end - start,
+        audioBuffer.sampleRate
+      );
+      for (var i = 0; i < audioBuffer.numberOfChannels; i++) {
+        newBuffer.copyToChannel(
+          audioBuffer.getChannelData(i).slice(start, end),
+          i
+        );
+      }
+      return newBuffer;
+    },
+    [getContext]
+  );
 
   useEffect(() => {
     (async () => {
@@ -81,18 +116,53 @@ export default function Analyser() {
         try {
           const [node, recorder, speechEvent] = await InitAudioRecorder();
           setAnalyserNode(node);
+          recorder.start();
+          const startTime = Date.now() / 1000;
           speechEvent.on("speaking", () => {
             clearTimeout(timeoutId);
-            recorder.start();
+            speakingTime.current = Date.now() / 1000;
             console.log("start recording");
           });
           speechEvent.on("stopped_speaking", async () => {
             speechEvent.stop();
+            const endTime = Date.now() / 1000;
             console.log("Stop");
             const { blob } = await recorder.stop();
-            console.log(URL.createObjectURL(blob));
-            setSpeech(blob);
-            setCalled(false);
+            const ctx = getContext();
+            const arrayBuffer = await blob.arrayBuffer();
+            const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+            // calculate the speaking point
+            const duration = endTime - startTime;
+            const speaking = speakingTime.current - startTime - 1;
+            //slice the audio just before the user speak for clearance of voice
+            const start = ((speaking || 0) / duration) * audioBuffer.length;
+            const buffer = sliceBuffer(audioBuffer, start);
+            const worker = new Worker("recordWorker.js");
+
+            // callback for `exportWAV`
+            worker.onmessage = function (e) {
+              var blob = e.data;
+              // this is would be your WAV blob
+              setSpeech(blob);
+              setCalled(false);
+              worker.terminate();
+            };
+
+            // initialize the new worker
+            worker.postMessage({
+              command: "init",
+              config: { sampleRate: 44100, numChannels: 2 },
+            });
+
+            worker.postMessage({
+              command: "record",
+              buffer: [buffer.getChannelData(0), buffer.getChannelData(1)],
+            });
+
+            worker.postMessage({
+              command: "exportWAV",
+              type: "audio/wav",
+            });
           });
           const timeoutId = setTimeout(() => {
             setIntialized(false);
@@ -111,7 +181,16 @@ export default function Analyser() {
         }
       }
     })();
-  }, [initialized, InitAudioRecorder, loading, setSpeech, state, called]);
+  }, [
+    initialized,
+    InitAudioRecorder,
+    loading,
+    setSpeech,
+    state,
+    called,
+    getContext,
+    sliceBuffer,
+  ]);
 
   const onHotWord = useCallback(async (hotword: string | MouseEvent) => {
     setIntialized(true);
@@ -173,20 +252,21 @@ export default function Analyser() {
               We couldn't access to your microphone ..
             </Typography>
             <Typography variant="caption">
-            <Link
-              onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
-                evt.preventDefault();
-                setIntent({
-                  intent: "ask_for_help",
-                  entities: {},
-                });
-              }}
-              className={styles.button}
-              variant="caption"
-            >
-              click here
-            </Link>
-            {" "}to enjoy our services</Typography>
+              <Link
+                onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
+                  evt.preventDefault();
+                  setIntent({
+                    intent: "ask_for_help",
+                    entities: {},
+                  });
+                }}
+                className={styles.button}
+                variant="caption"
+              >
+                click here
+              </Link>{" "}
+              to enjoy our services
+            </Typography>
           </>
         )}
       </Grid>
