@@ -5,7 +5,6 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import grey from "@material-ui/core/colors/grey";
-import cyan from "@material-ui/core/colors/cyan";
 import BumbleBeeProvider from "./lib/bumblebee-provider";
 import bumblebee from "./initBumblebee";
 import { RecoilRoot } from "recoil";
