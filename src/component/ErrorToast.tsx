@@ -20,9 +20,11 @@ export default function ErrorToast() {
           toastBody = "Oops , I cannot connect to my brains !";
           break;
         case "unknown_intent":
-          toastBody = `Sorry , But I couldn't understand "${
+          toastBody = `Sorry , But I couldn't understand ${
             (error as UnknownIntentError).text
-          }"`;
+              ? `"${(error as UnknownIntentError).text}"`
+              : "you :("
+          }`;
           break;
         default:
           toastBody = message;

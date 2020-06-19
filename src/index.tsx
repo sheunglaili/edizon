@@ -15,6 +15,8 @@ import { SnackbarProvider } from "notistack";
 fabric.filterBackend = new fabric.Canvas2dFilterBackend();
 
 
+
+
 const theme = createMuiTheme({
   palette: {
     primary: {

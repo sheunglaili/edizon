@@ -56,9 +56,10 @@ export default function Analyser() {
   const loading = useRecoilValue(processing);
 
   const getContext = useCallback(() => {
-    let AudioContext =
+    let ContextClass =
       window.AudioContext || (window as any).webkitAudioContext;
-    return new AudioContext();
+    const context = new ContextClass();
+    return context;
   }, []);
 
   const InitAudioRecorder = useCallback<
@@ -107,6 +108,23 @@ export default function Analyser() {
     [getContext]
   );
 
+  const toArrayBuffer = useCallback<(blob: Blob) => Promise<ArrayBuffer>>(
+    async (blob: Blob) => {
+      const reader = new FileReader();
+      return new Promise((resolve, reject) => {
+        reader.onload = (evt) => {
+          const arrayBuffer = evt.target?.result;
+          arrayBuffer ? resolve(arrayBuffer as ArrayBuffer) : reject();
+        };
+        reader.onerror = (err) => {
+          reject(err);
+        };
+        reader.readAsArrayBuffer(blob);
+      });
+    },
+    []
+  );
+
   useEffect(() => {
     (async () => {
       const componentLoading = loading || state === "loading";
@@ -129,8 +147,23 @@ export default function Analyser() {
             console.log("Stop");
             const { blob } = await recorder.stop();
             const ctx = getContext();
-            const arrayBuffer = await blob.arrayBuffer();
-            const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+            const arrayBuffer = await toArrayBuffer(blob);
+            // for handling safari
+            console.log(ctx);
+            console.log(ctx.decodeAudioData);
+            const audioBuffer = await new Promise<AudioBuffer>(
+              (resolve, reject) => {
+                ctx.decodeAudioData(
+                  arrayBuffer,
+                  function success(result) {
+                    resolve(result);
+                  },
+                  function failed(err) {
+                    reject(err);
+                  }
+                );
+              }
+            );
             // calculate the speaking point
             const duration = endTime - startTime;
             const speaking = speakingTime.current - startTime - 1;
@@ -190,6 +223,7 @@ export default function Analyser() {
     called,
     getContext,
     sliceBuffer,
+    toArrayBuffer,
   ]);
 
   const onHotWord = useCallback(async (hotword: string | MouseEvent) => {

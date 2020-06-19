@@ -1,13 +1,14 @@
-import BumbleBee from 'bumblebee-hotword';
+// eslint-disable-next-line import/first
+import BumbleBee from "bumblebee-hotword";
 
 const bumblebee = new BumbleBee();
 
-bumblebee.setWorkersPath(`./bumblebee-workers`)
+bumblebee.setWorkersPath(`./bumblebee-workers`);
 // add hotword to bumblebee
-bumblebee.addHotword('hey_edison');
+bumblebee.addHotword("hey_edison");
 // set the hotword to 'bumblebee'
-bumblebee.setHotword('hey_edison');
+bumblebee.setHotword("hey_edison");
 
-console.debug('initializing bumblebee');
+console.debug("initializing bumblebee");
 
 export default bumblebee;
