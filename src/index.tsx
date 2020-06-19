@@ -14,8 +14,9 @@ import { SnackbarProvider } from "notistack";
 // use canvas 2d to edit photo as applying ml model
 fabric.filterBackend = new fabric.Canvas2dFilterBackend();
 
-
-
+if (process.env.NODE_ENV === "production") {
+  console.log = () => {};
+}
 
 const theme = createMuiTheme({
   palette: {
