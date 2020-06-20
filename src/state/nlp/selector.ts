@@ -63,6 +63,16 @@ export const nlpQuery = selector<NLPResponse>({
     } else if (userSpeech) {
       try {
         const { data } = await recognise(userSpeech);
+        if(data.intents.length === 0){
+          // eslint-disable-next-line no-throw-literal
+          throw {
+            response:{
+              data : {
+                code : `I don't know what you mean by ${data.text}`
+              }
+            }
+          }
+        }
         return {
           intents: [],
           ...data,

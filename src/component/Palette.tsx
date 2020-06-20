@@ -56,8 +56,9 @@ export default function Palette() {
         {paletteState && (
           <>
             <div>Palette</div>
-            {paletteState.map(([r, g, b]) => (
+            {paletteState.map(([r, g, b] , index) => (
               <div
+                key={index}
                 className={styles.color}
                 style={{ backgroundColor: `rgb(${r},${g},${b})` }}
               ></div>
