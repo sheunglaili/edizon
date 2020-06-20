@@ -53,7 +53,7 @@ function App() {
         alignContent="center"
         className={styles.container}
       >
-        <Grid container item md={3} sm={2} xs={undefined}></Grid>
+        <Grid container item lg={4} md={3} sm={2} xs={undefined}></Grid>
         <Grid
           style={{ height: "100vh" }}
           justify="center"
@@ -62,6 +62,7 @@ function App() {
           alignItems="center"
           container
           item
+          lg={4}
           md={6}
           sm={8}
           xs={10}
@@ -85,7 +86,7 @@ function App() {
             <HelpMenu />
           </React.Suspense>
         </Grid>
-        <Grid container item md={3} sm={2} xs={12}>
+        <Grid container lg={4} item md={3} sm={2} xs={12}>
           <Palette />
         </Grid>
         {/* <Grid container justify="center" alignContent="center" item xs={9}>

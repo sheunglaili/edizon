@@ -143,59 +143,62 @@ export default function Analyser() {
           });
           speechEvent.on("stopped_speaking", async () => {
             speechEvent.stop();
-            const endTime = Date.now() / 1000;
-            console.log("Stop");
-            const { blob } = await recorder.stop();
-            const ctx = getContext();
-            const arrayBuffer = await toArrayBuffer(blob);
-            // for handling safari
-            console.log(ctx);
-            console.log(ctx.decodeAudioData);
-            const audioBuffer = await new Promise<AudioBuffer>(
-              (resolve, reject) => {
-                ctx.decodeAudioData(
-                  arrayBuffer,
-                  function success(result) {
-                    resolve(result);
-                  },
-                  function failed(err) {
-                    reject(err);
-                  }
-                );
-              }
-            );
-            // calculate the speaking point
-            const duration = endTime - startTime;
-            const speaking = speakingTime.current - startTime - 1;
-            //slice the audio just before the user speak for clearance of voice
-            const start = ((speaking || 0) / duration) * audioBuffer.length;
-            const buffer = sliceBuffer(audioBuffer, start);
-            const worker = new Worker("recordWorker.js");
+            //delay a bit for more complete recording
+            setTimeout(async () => {
+              const endTime = Date.now() / 1000;
+              console.log("Stop");
+              const { blob } = await recorder.stop();
+              const ctx = getContext();
+              const arrayBuffer = await toArrayBuffer(blob);
+              // for handling safari
+              console.log(ctx);
+              console.log(ctx.decodeAudioData);
+              const audioBuffer = await new Promise<AudioBuffer>(
+                (resolve, reject) => {
+                  ctx.decodeAudioData(
+                    arrayBuffer,
+                    function success(result) {
+                      resolve(result);
+                    },
+                    function failed(err) {
+                      reject(err);
+                    }
+                  );
+                }
+              );
+              // calculate the speaking point
+              const duration = endTime - startTime;
+              const speaking = speakingTime.current - startTime - 1;
+              //slice the audio just before the user speak for clearance of voice
+              const start = ((speaking || 0) / duration) * audioBuffer.length;
+              const buffer = sliceBuffer(audioBuffer, start);
+              const worker = new Worker("recordWorker.js");
 
-            // callback for `exportWAV`
-            worker.onmessage = function (e) {
-              var blob = e.data;
-              // this is would be your WAV blob
-              setSpeech(blob);
-              setCalled(false);
-              worker.terminate();
-            };
+              // callback for `exportWAV`
+              worker.onmessage = function (e) {
+                var blob = e.data;
+                // this is would be your WAV blob
+                setSpeech(blob);
+                setCalled(false);
+                worker.terminate();
+              };
 
-            // initialize the new worker
-            worker.postMessage({
-              command: "init",
-              config: { sampleRate: 44100, numChannels: 2 },
-            });
+              // initialize the new worker
+              worker.postMessage({
+                command: "init",
+                config: { sampleRate: 44100, numChannels: 2 },
+              });
 
-            worker.postMessage({
-              command: "record",
-              buffer: [buffer.getChannelData(0), buffer.getChannelData(1)],
-            });
+              worker.postMessage({
+                command: "record",
+                buffer: [buffer.getChannelData(0), buffer.getChannelData(1)],
+              });
 
-            worker.postMessage({
-              command: "exportWAV",
-              type: "audio/wav",
-            });
+              worker.postMessage({
+                command: "exportWAV",
+                type: "audio/wav",
+              });
+            }, 500)
           });
           const timeoutId = setTimeout(() => {
             setIntialized(false);
@@ -280,29 +283,29 @@ export default function Analyser() {
             </Grid>
           </>
         ) : (
-          <>
-            <SentimentVeryDissatisfiedIcon />
-            <Typography variant="caption">
-              We couldn't access to your microphone ..
+            <>
+              <SentimentVeryDissatisfiedIcon />
+              <Typography variant="caption">
+                We couldn't access to your microphone ..
             </Typography>
-            <Typography variant="caption">
-              <Link
-                onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
-                  evt.preventDefault();
-                  setIntent({
-                    intent: "ask_for_help",
-                    entities: {},
-                  });
-                }}
-                className={styles.button}
-                variant="caption"
-              >
-                click here
+              <Typography variant="caption">
+                <Link
+                  onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
+                    evt.preventDefault();
+                    setIntent({
+                      intent: "ask_for_help",
+                      entities: {},
+                    });
+                  }}
+                  className={styles.button}
+                  variant="caption"
+                >
+                  click here
               </Link>{" "}
               to enjoy our services
             </Typography>
-          </>
-        )}
+            </>
+          )}
       </Grid>
     ),
     [onHotWord, setIntent, styles]
