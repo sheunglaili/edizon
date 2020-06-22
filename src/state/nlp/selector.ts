@@ -1,4 +1,4 @@
-import { selector , atom } from "recoil";
+import { selector } from "recoil";
 import { recognise } from "./request";
 import { userSpeechState, nlpState } from "./atom";
 
@@ -6,7 +6,6 @@ const KEY = {
   NLP_QUERY: "NLP_QUERY",
   INTENT: "INTENT",
   ERROR: "ERROR",
-  USER_ERROR: "USER_ERROR",
 };
 
 export interface Intent {
@@ -63,16 +62,6 @@ export const nlpQuery = selector<NLPResponse>({
     } else if (userSpeech) {
       try {
         const { data } = await recognise(userSpeech);
-        if(data.intents.length === 0){
-          // eslint-disable-next-line no-throw-literal
-          throw {
-            response:{
-              data : {
-                code : `I don't know what you mean by ${data.text}`
-              }
-            }
-          }
-        }
         return {
           intents: [],
           ...data,
@@ -90,6 +79,7 @@ export const nlpQuery = selector<NLPResponse>({
     }
   },
 });
+
 
 export const intentState = selector<AnalysedIntent>({
   key: KEY.INTENT,
@@ -136,7 +126,4 @@ export const errorState = selector<Error | undefined>({
   },
 });
 
-export const errorAtom = atom<Error | undefined>({
-  key: KEY.USER_ERROR,
-  default: errorState,
-});
+

@@ -151,7 +151,7 @@ export default function Analyser() {
               const ctx = getContext();
               const arrayBuffer = await toArrayBuffer(blob);
               // for handling safari
-              console.log(URL.createObjectURL(blob))
+              console.log(URL.createObjectURL(blob));
               const audioBuffer = await new Promise<AudioBuffer>(
                 (resolve, reject) => {
                   ctx.decodeAudioData(
@@ -169,7 +169,8 @@ export default function Analyser() {
               const duration = endTime - startTime;
               const speaking = speakingTime.current - startTime - 1;
               //slice the audio just before the user speak for clearance of voice
-              const start = ((speaking < 0 ?  0 : speaking) / duration) * audioBuffer.length;
+              const start =
+                ((speaking < 0 ? 0 : speaking) / duration) * audioBuffer.length;
               const buffer = sliceBuffer(audioBuffer, start);
               const worker = new Worker("recordWorker.js");
 
@@ -178,7 +179,7 @@ export default function Analyser() {
                 var blob = e.data;
                 // this is would be your WAV blob
                 setSpeech(blob);
-                console.log(URL.createObjectURL(blob))
+                console.log(URL.createObjectURL(blob));
                 setCalled(false);
                 worker.terminate();
               };
@@ -198,9 +199,9 @@ export default function Analyser() {
                 command: "exportWAV",
                 type: "audio/wav",
               });
-            }, 500)
+            }, 500);
           });
-          
+
           // stop injest audio input after 5s
           const timeoutId = setTimeout(() => {
             setIntialized(false);
@@ -284,29 +285,29 @@ export default function Analyser() {
             </Grid>
           </>
         ) : (
-            <>
-              <SentimentVeryDissatisfiedIcon />
-              <Typography variant="caption">
-                We couldn't access to your microphone ..
+          <>
+            <SentimentVeryDissatisfiedIcon />
+            <Typography variant="caption">
+              We couldn't access to your microphone ..
             </Typography>
-              <Typography variant="caption">
-                <Link
-                  onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
-                    evt.preventDefault();
-                    setIntent({
-                      intent: "ask_for_help",
-                      entities: {},
-                    });
-                  }}
-                  className={styles.button}
-                  variant="caption"
-                >
-                  click here
+            <Typography variant="caption">
+              <Link
+                onClick={(evt: MouseEvent<HTMLAnchorElement>) => {
+                  evt.preventDefault();
+                  setIntent({
+                    intent: "ask_for_help",
+                    entities: {},
+                  });
+                }}
+                className={styles.button}
+                variant="caption"
+              >
+                click here
               </Link>{" "}
               to enjoy our services
             </Typography>
-            </>
-          )}
+          </>
+        )}
       </Grid>
     ),
     [onHotWord, setIntent, styles]

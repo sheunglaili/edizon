@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useCallback } from "react";
 import { fabric } from "fabric";
 import { makeStyles, Theme } from "@material-ui/core";
 import { useRecoilStateLoadable, useSetRecoilState } from "recoil";
-import { AnalysedIntent, intentState, errorAtom } from "../state/nlp/selector";
+import { AnalysedIntent, intentState, errorAtom } from "../state/nlp";
 import { color, palette } from "../state/canvas";
 import reduce from "../lib/canvas-reducer";
 import { processing } from "../state/canvas";
